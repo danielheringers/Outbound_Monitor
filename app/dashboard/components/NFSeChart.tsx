@@ -18,6 +18,12 @@ import {
 } from "@/components/ui/chart";
 import { NFSeData } from "./types";
 import StatusBadges from "@/components/StatusBadge";
+
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
+};
+
 export function NFSeChart() {
   const [chartData, setChartData] = useState<NFSeData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -30,7 +36,11 @@ export function NFSeChart() {
         throw new Error("Falha ao buscar métricas");
       }
       const data = await response.json();
-      setChartData(data.nfse);
+      const formattedData = data.nfse.map((item: NFSeData) => ({
+        ...item,
+        period: formatDate(item.period)
+      }));
+      setChartData(formattedData);
       setIsLoading(false);
     } catch (err) {
       console.error("Erro ao carregar dados do gráfico:", err);
@@ -66,10 +76,10 @@ export function NFSeChart() {
     const yDomain = [Math.max(0, minCount - 50), maxCount + 50];
 
     return (
-      <ChartContainer config={chartConfig} className="h-[250px] w-full">
+      <ChartContainer config={chartConfig} className="h-[240px] w-full">
         <AreaChart
           data={chartData}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--grid))" />
           <XAxis dataKey="period" />

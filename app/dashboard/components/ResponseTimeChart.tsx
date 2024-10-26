@@ -54,7 +54,7 @@ export function ResponseTimeChart() {
   useEffect(() => {
     const interval = setInterval(() => {
       setChartData(generateChartData());
-    }, 60000);
+    }, 300000);
     return () => clearInterval(interval);
   }, []);
 

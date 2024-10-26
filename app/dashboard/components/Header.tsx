@@ -97,7 +97,7 @@ export function Header() {
             </div>
           </div>
           <Separator className="my-2" />
-          <div className="text-[10px] sm:text-xs 2xl:text-sm text-muted-foreground">
+          <div className="text-lg text-muted-foreground">
             {formatTime(secondsUntilNextDay)}
           </div>
         </CardContent>

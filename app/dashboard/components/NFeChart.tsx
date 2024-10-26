@@ -24,6 +24,11 @@ const playAlertSound = () => {
   audio.play();
 };
 
+const formatDate = (dateString: string) => {
+  const date = new Date(dateString);
+  return date.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', hour12: false });
+};
+
 export function NFeChart() {
   const [chartData, setChartData] = useState<NFeData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,10 +42,14 @@ export function NFeChart() {
           throw new Error('Falha ao buscar métricas');
         }
         const data = await response.json();
-        setChartData(data.nfe);
+        const formattedData = data.nfe.map((item: NFeData) => ({
+          ...item,
+          period: formatDate(item.period)
+        }));
+        setChartData(formattedData);
         setIsLoading(false);
 
-        const latestValue = data.nfe[data.nfe.length - 1]?.count || 0;
+        const latestValue = formattedData[formattedData.length - 1]?.count || 0;
         if (latestValue < 150 && latestValue > 40) {
           playAlertSound();
         } else if (latestValue <= 40) {
@@ -82,10 +91,10 @@ export function NFeChart() {
     const yDomain = [Math.max(0, minCount - 50), maxCount + 50];
 
     return (
-      <ChartContainer config={chartConfig} className="h-[250px] w-full">
+      <ChartContainer config={chartConfig} className="h-[240px] w-full">
         <AreaChart
           data={chartData}
-          margin={{ top: 10, right: 30, left: 0, bottom: 0 }}
+          margin={{ top: 0, right: 30, left: 0, bottom: 0 }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--grid))" />
           <XAxis dataKey="period" />
