@@ -45,7 +45,7 @@ export function NFeChart() {
           playAlertSound();
         } else if (latestValue <= 40) {
           playAlertSound();
-          playAlertSound(); // Play twice for more urgent alert
+          playAlertSound();
         }
       } catch (err) {
         console.error('Erro ao carregar dados do gráfico:', err);
@@ -54,11 +54,11 @@ export function NFeChart() {
       }
     };
 
-    fetchAndUpdateData(); // Initial fetch
+    fetchAndUpdateData();
 
-    const interval = setInterval(fetchAndUpdateData, 50000); // Update every 50 seconds
+    const interval = setInterval(fetchAndUpdateData, 900000);
 
-    return () => clearInterval(interval); // Clean up on unmount
+    return () => clearInterval(interval);
   }, []);
 
   const chartConfig: ChartConfig = useMemo(
@@ -140,7 +140,7 @@ export function NFeChart() {
   return (
     <Card className="w-full mt-4">
       <CardHeader className="flex flex-row w-full items-center justify-between">
-        <CardTitle className="flex items-center h-full">NFe</CardTitle>
+        <CardTitle className="flex items-center text-[24px] h-full">NFe</CardTitle>
         <StatusBadges/>
       </CardHeader>
       <CardContent>
@@ -160,7 +160,7 @@ export function NFeChart() {
           <Card>
             <CardContent className="flex p-2 flex-col items-center justify-center h-full">
               <div className="text-sm text-muted-foreground">Na Fila</div>
-              <div className="text-2xl font-bold">N/A</div>
+              <div className="text-2xl font-bold">0</div>
             </CardContent>
           </Card>
         </div>

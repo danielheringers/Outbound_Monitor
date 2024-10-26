@@ -1,46 +1,36 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 
 type Status = "online" | "inconsistent" | "offline";
 
+interface ApiResponse {
+  name: string;
+  status: "OPERATIONAL" | "PARTIALOUTAGE" | "MINOROUTAGE" | "MAJOROUTAGE";
+}
+
 interface StateStatus {
-  uf: string;
+  name: string;
   status: Status;
 }
 
-const stateStatuses: StateStatus[] = [
-  { uf: "AC", status: "online" },
-  { uf: "AL", status: "online" },
-  { uf: "AM", status: "online" },
-  { uf: "AP", status: "online" },
-  { uf: "BA", status: "offline" },
-  { uf: "CE", status: "online" },
-  { uf: "DF", status: "online" },
-  { uf: "ES", status: "online" },
-  { uf: "GO", status: "online" },
-  { uf: "MA", status: "online" },
-  { uf: "MG", status: "inconsistent" },
-  { uf: "MS", status: "online" },
-  { uf: "MT", status: "online" },
-  { uf: "PA", status: "online" },
-  { uf: "PB", status: "online" },
-  { uf: "PE", status: "online" },
-  { uf: "PI", status: "online" },
-  { uf: "PR", status: "online" },
-  { uf: "RJ", status: "online" },
-  { uf: "RN", status: "inconsistent" },
-  { uf: "RO", status: "inconsistent" },
-  { uf: "RR", status: "online" },
-  { uf: "RS", status: "online" },
-  { uf: "SC", status: "online" },
-  { uf: "SE", status: "online" },
-  { uf: "SP", status: "online" },
-  { uf: "TO", status: "online" },
-];
+const mapApiStatusToComponentStatus = (apiStatus: string): Status => {
+  switch (apiStatus) {
+    case "OPERATIONAL":
+      return "online";
+    case "PARTIALOUTAGE":
+    case "MINOROUTAGE":
+      return "inconsistent";
+    case "MAJOROUTAGE":
+      return "offline";
+    default:
+      return "inconsistent";
+  }
+};
 
-const StatusBadge: React.FC<StateStatus> = ({ uf, status }) => {
+const StatusBadge: React.FC<StateStatus> = ({ name, status }) => {
   const getStatusColor = (status: Status) => {
     switch (status) {
       case "online":
@@ -53,25 +43,92 @@ const StatusBadge: React.FC<StateStatus> = ({ uf, status }) => {
   };
 
   return (
-    <Badge variant="outline" className="flex items-center gap-2">
-      {uf}
-      <span className="relative flex h-3 w-3">
-        <span
-          className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${getStatusColor(
-            status
-          )}`}
-        ></span>
-        <span
-          className={`relative inline-flex rounded-full h-3 w-3 ${getStatusColor(
-            status
-          )}`}
-        ></span>
-      </span>
-    </Badge>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <Badge variant="outline" className="flex items-center gap-2 cursor-pointer">
+            {name}
+            <span className="relative flex h-3 w-3">
+              <span
+                className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${getStatusColor(
+                  status
+                )}`}
+              ></span>
+              <span
+                className={`relative inline-flex rounded-full h-3 w-3 ${getStatusColor(
+                  status
+                )}`}
+              ></span>
+            </span>
+          </Badge>
+        </TooltipTrigger>
+        <TooltipContent side="top" align="center" className="bg-gray-800 text-white p-2 rounded-md">
+          <p>{status.charAt(0).toUpperCase() + status.slice(1)}</p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 };
 
 export function Footer() {
+  const [stateStatuses, setStateStatuses] = useState<StateStatus[]>([]);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchStatusData = async () => {
+      try {
+        const response = await fetch("https://monitorsefaz.webmaniabr.com/v2/components.json");
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const data = await response.json();
+        
+        console.log("Received data:", JSON.stringify(data, null, 2));
+
+        if (!Array.isArray(data)) {
+          if (typeof data === 'object' && data !== null) {
+            // If data is an object, try to extract an array from it
+            const possibleArray = Object.values(data).find(Array.isArray);
+            if (possibleArray) {
+              console.log("Found array in object:", possibleArray);
+              processData(possibleArray);
+              return;
+            }
+          }
+          throw new Error(`Data is not an array. Received: ${typeof data}`);
+        }
+
+        processData(data);
+      } catch (error) {
+        console.error("Error fetching status data:", error);
+        setError(`Failed to fetch status data`);
+        setStateStatuses([]);
+      }
+    };
+
+    const processData = (data: ApiResponse[]) => {
+      const updatedStatuses = data.map((item: ApiResponse) => ({
+        name: item.name,
+        status: mapApiStatusToComponentStatus(item.status)
+      }));
+
+      setStateStatuses(updatedStatuses);
+      setError(null);
+    };
+
+    fetchStatusData();
+    const intervalId = setInterval(fetchStatusData, 5 * 60 * 1000);
+    return () => clearInterval(intervalId);
+  }, []);
+
+  if (error) {
+    return (
+      <footer className="border-t">
+        <div className="px-4 py-4 text-red-500">{error}</div>
+      </footer>
+    );
+  }
+
   return (
     <footer className="border-t">
       <div className="px-4 py-4">
@@ -79,7 +136,7 @@ export function Footer() {
           <div className="w-full md:w-auto mb-4 md:mb-0">
             <div className="flex flex-wrap gap-2">
               {stateStatuses.map((state) => (
-                <StatusBadge key={state.uf} uf={state.uf} status={state.status} />
+                <StatusBadge key={state.name} name={state.name} status={state.status} />
               ))}
             </div>
           </div>

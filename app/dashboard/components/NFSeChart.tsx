@@ -41,7 +41,7 @@ export function NFSeChart() {
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 120000);
+    const interval = setInterval(fetchData, 900000);
     return () => clearInterval(interval);
   }, []);
 
@@ -152,7 +152,7 @@ export function NFSeChart() {
           <Card>
             <CardContent className="flex p-2 flex-col items-center justify-center h-full">
               <div className="text-sm text-muted-foreground">Na Fila</div>
-              <div className="text-2xl font-bold">N/A</div>
+              <div className="text-2xl font-bold">21.247</div>
             </CardContent>
           </Card>
         </div>

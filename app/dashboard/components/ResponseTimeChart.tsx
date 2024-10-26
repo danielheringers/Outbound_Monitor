@@ -84,7 +84,7 @@ export function ResponseTimeChart() {
   return (
     <Card className="w-full mt-4">
       <CardHeader>
-        <CardTitle>Tempo de Resposta</CardTitle>
+        <CardTitle className="text-[24px]">Tempo de Resposta</CardTitle>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className="h-[200px] w-full">

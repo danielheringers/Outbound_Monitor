@@ -50,7 +50,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ label, status, icon }) => {
           </span>
         </Badge>
       </TooltipTrigger>
-      <TooltipContent side="top" align="center" className="bg-gray-800 text-white p-2 rounded-md shadow-md">
+      <TooltipContent side="top" align="center" className="bg-gray-800 text-white p-2 rounded-md shadow-md z-10">
         <p>{label}</p>
       </TooltipContent>
     </Tooltip>
@@ -60,7 +60,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ label, status, icon }) => {
 export default function StatusBadges() {
   return (
     <TooltipProvider>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 w-38 rounded-lg">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-2 w-38">
         <StatusBadge
           label="Emissão"
           status="lime"
