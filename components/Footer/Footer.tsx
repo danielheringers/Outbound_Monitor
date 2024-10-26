@@ -12,14 +12,25 @@ import { Separator } from "@/components/ui/separator";
 
 type Status = "online" | "inconsistent" | "offline";
 
-interface ApiResponse {
+interface Group {
+  id: string;
   name: string;
+  description: string;
+}
+
+interface ApiResponse {
+  id: string;
+  name: string;
+  description: string;
   status: "OPERATIONAL" | "PARTIALOUTAGE" | "MINOROUTAGE" | "MAJOROUTAGE";
+  group: Group;
 }
 
 interface StateStatus {
   name: string;
   status: Status;
+  group: Group;
+  description: string;
 }
 
 const mapApiStatusToComponentStatus = (apiStatus: string): Status => {
@@ -54,10 +65,10 @@ const StatusBadge: React.FC<StateStatus> = ({ name, status }) => {
         <TooltipTrigger asChild>
           <Badge
             variant="outline"
-            className="flex items-center gap-2 cursor-pointer text-[14px]"
+            className="flex items-center gap-2 cursor-pointer text-[12px]"
           >
             {name}
-            <Separator orientation="vertical"/>
+          
             <span className="relative flex h-3 w-3">
               <span
                 className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${getStatusColor(
@@ -80,7 +91,7 @@ const StatusBadge: React.FC<StateStatus> = ({ name, status }) => {
   );
 };
 
-const StatusBadgeGeral: React.FC<StateStatus> = ({ name, status }) => {
+const StatusBadgeGeral: React.FC<StateStatus> = ({ name, status, description }) => {
   const getStatusColor = (status: Status) => {
     switch (status) {
       case "online":
@@ -118,12 +129,25 @@ const StatusBadgeGeral: React.FC<StateStatus> = ({ name, status }) => {
         </TooltipTrigger>
         <TooltipContent side="top" align="center" className="p-2 rounded-md">
           <p>{status.charAt(0).toUpperCase() + status.slice(1)}</p>
+          {description && <p className="text-xs mt-1">{description}</p>}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
   );
 };
 
+const createStateBadges = (item: StateStatus): StateStatus[] => {
+  if (item.name.length === 4 && item.description) {
+    const states = item.description.split(', ');
+    return states.map((state) => ({
+      name: state,
+      status: item.status,
+      group: item.group,
+      description: `${item.name}: ${item.description}`
+    }));
+  }
+  return [item];
+};
 
 export function Footer() {
   const [generalStatuses, setGeneralStatuses] = useState<StateStatus[]>([]);
@@ -165,12 +189,18 @@ export function Footer() {
       const updatedStatuses = data.map((item: ApiResponse) => ({
         name: item.name,
         status: mapApiStatusToComponentStatus(item.status),
+        group: item.group,
+        description: item.description
       }));
 
-      const general = updatedStatuses.filter(
-        (status) => status.name.length > 4
-      );
-      const states = updatedStatuses.filter((status) => status.name.length < 4);
+      const general = updatedStatuses
+        .filter((status) => status.name.length > 4)
+        .sort((a, b) => a.name.localeCompare(b.name));
+
+      const states = updatedStatuses
+        .filter((status) => status.name.length <= 4 && status.group.name === "Autorizadores de NF-e")
+        .flatMap(createStateBadges)
+        .sort((a, b) => a.name.localeCompare(b.name));
 
       setGeneralStatuses(general);
       setStateStatuses(states);
@@ -202,6 +232,8 @@ export function Footer() {
                   key={state.name}
                   name={state.name}
                   status={state.status}
+                  group={state.group}
+                  description={state.description}
                 />
               ))}
             </div>
@@ -214,6 +246,8 @@ export function Footer() {
                   key={state.name}
                   name={state.name}
                   status={state.status}
+                  group={state.group}
+                  description={state.description}
                 />
               ))}
             </div>

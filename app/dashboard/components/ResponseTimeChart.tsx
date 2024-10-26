@@ -102,7 +102,7 @@ export function ResponseTimeChart() {
                 tick={{ fontSize: 12 }}
               />
               <YAxis
-                domain={[0.10, 1.10]}
+                domain={[0.10, 1]}
                 ticks={[0.25, 0.50, 0.80, 1.00]}
                 tick={<CustomYAxisTick x={undefined} y={undefined} payload={undefined} />}
                 axisLine={false}
