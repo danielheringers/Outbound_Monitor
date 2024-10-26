@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
+import { Separator } from "@/components/ui/separator";
 
 type Status = "online" | "inconsistent" | "offline";
 
@@ -71,6 +72,7 @@ const StatusBadge: React.FC<StateStatus> = ({ name, status }) => {
 };
 
 export function Footer() {
+  const [generalStatuses, setGeneralStatuses] = useState<StateStatus[]>([]);
   const [stateStatuses, setStateStatuses] = useState<StateStatus[]>([]);
   const [error, setError] = useState<string | null>(null);
 
@@ -87,7 +89,6 @@ export function Footer() {
 
         if (!Array.isArray(data)) {
           if (typeof data === 'object' && data !== null) {
-            // If data is an object, try to extract an array from it
             const possibleArray = Object.values(data).find(Array.isArray);
             if (possibleArray) {
               console.log("Found array in object:", possibleArray);
@@ -102,6 +103,7 @@ export function Footer() {
       } catch (error) {
         console.error("Error fetching status data:", error);
         setError(`Failed to fetch status data`);
+        setGeneralStatuses([]);
         setStateStatuses([]);
       }
     };
@@ -112,7 +114,11 @@ export function Footer() {
         status: mapApiStatusToComponentStatus(item.status)
       }));
 
-      setStateStatuses(updatedStatuses);
+      const general = updatedStatuses.filter(status => status.name.length > 4);
+      const states = updatedStatuses.filter(status => status.name.length < 4);
+
+      setGeneralStatuses(general);
+      setStateStatuses(states);
       setError(null);
     };
 
@@ -132,8 +138,18 @@ export function Footer() {
   return (
     <footer className="border-t">
       <div className="px-4 py-4">
-        <div className="flex flex-wrap justify-between items-center">
-          <div className="w-full md:w-auto mb-4 md:mb-0">
+        <div className="flex flex-col w-full">
+          <div className="mb-4">
+            <h3 className="text-lg font-semibold mb-2">Geral</h3>
+            <div className="flex flex-wrap gap-2">
+              {generalStatuses.map((state) => (
+                <StatusBadge key={state.name} name={state.name} status={state.status} />
+              ))}
+            </div>
+          </div>
+          <Separator className="my-4" />
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Estados</h3>
             <div className="flex flex-wrap gap-2">
               {stateStatuses.map((state) => (
                 <StatusBadge key={state.name} name={state.name} status={state.status} />

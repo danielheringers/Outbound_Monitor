@@ -30,7 +30,7 @@ const generateChartData = () => {
   const now = new Date();
   for (let i = 0; i < 32; i++) {
     const time = new Date(now.getTime() - (31 - i) * 15 * 60000);
-    const rawResponseTime = Math.random() * 1 + 0;
+    const rawResponseTime = Math.random() * (0.49 - 0.20) + 0.20;
     data.push({
       time: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       responseTime: parseFloat(categorizeResponseTime(rawResponseTime)),
@@ -39,11 +39,13 @@ const generateChartData = () => {
   return data;
 };
 
+
 const responseCategories = [
   { value: 1.00, label: "Lento", color: "#FF4136" },
   { value: 0.80, label: "Aceitável", color: "#FF851B" },
   { value: 0.50, label: "Bom", color: "#0074D9" },
   { value: 0.25, label: "Excelente", color: "#2ECC40" },
+  { value: 0.00, label: "Perfect", color: "#2ecc400" },
 ];
 
 export function ResponseTimeChart() {
@@ -91,7 +93,7 @@ export function ResponseTimeChart() {
           <ResponsiveContainer width="100%" height="100%">
             <LineChart
               data={chartData}
-              margin={{ top: 5, right: 30, left: 60, bottom: 5 }}
+              margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--grid))" />
               <XAxis
@@ -100,7 +102,7 @@ export function ResponseTimeChart() {
                 tick={{ fontSize: 12 }}
               />
               <YAxis
-                domain={[0.25, 1.00]}
+                domain={[0.10, 1.10]}
                 ticks={[0.25, 0.50, 0.80, 1.00]}
                 tick={<CustomYAxisTick x={undefined} y={undefined} payload={undefined} />}
                 axisLine={false}
