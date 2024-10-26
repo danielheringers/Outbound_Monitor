@@ -1,63 +1,36 @@
-"use client";
+"use client"
 
-import React, { useState, useEffect } from "react";
-import { Badge } from "@/components/ui/badge";
+import React from "react"
+import { Badge } from "@/components/ui/badge"
 import {
   Tooltip,
   TooltipContent,
   TooltipProvider,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Separator } from "@/components/ui/separator";
+} from "@/components/ui/tooltip"
+import { Separator } from "@/components/ui/separator"
+import { useMonitor } from "@/context/MonitorContext"
 
-type Status = "online" | "inconsistent" | "offline";
-
-interface Group {
-  id: string;
-  name: string;
-  description: string;
-}
-
-interface ApiResponse {
-  id: string;
-  name: string;
-  description: string;
-  status: "OPERATIONAL" | "PARTIALOUTAGE" | "MINOROUTAGE" | "MAJOROUTAGE";
-  group: Group;
-}
+type Status = "online" | "inconsistent" | "offline"
 
 interface StateStatus {
-  name: string;
-  status: Status;
-  group: Group;
-  description: string;
+  name: string
+  status: Status
+  group: { name: string }
+  description: string
 }
 
-const mapApiStatusToComponentStatus = (apiStatus: string): Status => {
-  switch (apiStatus) {
-    case "OPERATIONAL":
-      return "online";
-    case "PARTIALOUTAGE":
-    case "MINOROUTAGE":
-      return "inconsistent";
-    case "MAJOROUTAGE":
-      return "offline";
-    default:
-      return "inconsistent";
-  }
-};
-
-const StatusBadge: React.FC<StateStatus> = ({ name, status }) => {
+const StatusBadge: React.FC<StateStatus> = ({ name, status, description }) => {
   const getStatusColor = (status: Status) => {
     switch (status) {
       case "online":
-        return "bg-green-500";
+        return "bg-green-500"
       case "inconsistent":
-        return "bg-yellow-500";
+        return "bg-yellow-500"
       case "offline":
-        return "bg-red-500";
+        return "bg-red-500"
     }
-  };
+  }
 
   return (
     <TooltipProvider>
@@ -85,23 +58,24 @@ const StatusBadge: React.FC<StateStatus> = ({ name, status }) => {
         </TooltipTrigger>
         <TooltipContent side="top" align="center" className="p-2 rounded-md">
           <p>{status.charAt(0).toUpperCase() + status.slice(1)}</p>
+          {description && <p className="text-xs mt-1">{description}</p>}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  );
-};
+  )
+}
 
 const StatusBadgeGeral: React.FC<StateStatus> = ({ name, status, description }) => {
   const getStatusColor = (status: Status) => {
     switch (status) {
       case "online":
-        return "bg-green-500";
+        return "bg-green-500"
       case "inconsistent":
-        return "bg-yellow-500";
+        return "bg-yellow-500"
       case "offline":
-        return "bg-red-500";
+        return "bg-red-500"
     }
-  };
+  }
 
   return (
     <TooltipProvider>
@@ -133,91 +107,18 @@ const StatusBadgeGeral: React.FC<StateStatus> = ({ name, status, description }) 
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
-  );
-};
-
-const createStateBadges = (item: StateStatus): StateStatus[] => {
-  if (item.name.length === 4 && item.description) {
-    const states = item.description.split(', ');
-    return states.map((state) => ({
-      name: state,
-      status: item.status,
-      group: item.group,
-      description: `${item.name}: ${item.description}`
-    }));
-  }
-  return [item];
-};
+  )
+}
 
 export function Footer() {
-  const [generalStatuses, setGeneralStatuses] = useState<StateStatus[]>([]);
-  const [stateStatuses, setStateStatuses] = useState<StateStatus[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const { generalStatuses, stateStatuses, isLoading } = useMonitor()
 
-  useEffect(() => {
-    const fetchStatusData = async () => {
-      try {
-        const response = await fetch(
-          "https://monitorsefaz.webmaniabr.com/v2/components.json"
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-
-        if (!Array.isArray(data)) {
-          if (typeof data === "object" && data !== null) {
-            const possibleArray = Object.values(data).find(Array.isArray);
-            if (possibleArray) {
-              processData(possibleArray);
-              return;
-            }
-          }
-          throw new Error(`Data is not an array. Received: ${typeof data}`);
-        }
-
-        processData(data);
-      } catch (error) {
-        console.error("Error fetching status data:", error);
-        setError(`Failed to fetch status data`);
-        setGeneralStatuses([]);
-        setStateStatuses([]);
-      }
-    };
-
-    const processData = (data: ApiResponse[]) => {
-      const updatedStatuses = data.map((item: ApiResponse) => ({
-        name: item.name,
-        status: mapApiStatusToComponentStatus(item.status),
-        group: item.group,
-        description: item.description
-      }));
-
-      const general = updatedStatuses
-        .filter((status) => status.name.length > 4)
-        .sort((a, b) => a.name.localeCompare(b.name));
-
-      const states = updatedStatuses
-        .filter((status) => status.name.length <= 4 && status.group.name === "Autorizadores de NF-e")
-        .flatMap(createStateBadges)
-        .sort((a, b) => a.name.localeCompare(b.name));
-
-      setGeneralStatuses(general);
-      setStateStatuses(states);
-      setError(null);
-    };
-
-    fetchStatusData();
-    const intervalId = setInterval(fetchStatusData, 5 * 60 * 1000);
-    return () => clearInterval(intervalId);
-  }, []);
-
-  if (error) {
+  if (isLoading) {
     return (
       <footer className="border-t">
-        <div className="px-4 py-4 text-red-500">{error}</div>
+        <div className="px-4 py-4">Carregando...</div>
       </footer>
-    );
+    )
   }
 
   return (
@@ -255,5 +156,5 @@ export function Footer() {
         </div>
       </div>
     </footer>
-  );
+  )
 }
