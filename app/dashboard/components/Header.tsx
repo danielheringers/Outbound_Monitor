@@ -9,7 +9,7 @@ export function Header() {
   const [daysSinceLastOutage, setDaysSinceLastOutage] = useState(0)
   const [secondsUntilNextDay, setSecondsUntilNextDay] = useState(0)
   const [nextUpdates, setNextUpdates] = useState([
-    { name: "Próxima Atualização: ", timeLeft: 3600 },
+    { name: "Próxima Atualização", timeLeft: 3600 },
   ])
 
   useEffect(() => {
@@ -71,8 +71,8 @@ export function Header() {
       <Card className="flex mx-1 max-w-60">
         <CardContent className="p-2 flex h-[68px] w-60 items-center justify-between pr-6">
           <div>
-            <div className="text-xs font-medium">Tempo Online</div>
-            <div className="text-sm font-bold">
+            <div className="text-xs sm:text-sm 2xl:text-lg font-medium">Tempo Online</div>
+            <div className="text-xs sm:text-sm 2xl:text-lg font-bold">
               {timeOnline.toFixed(2)}%
             </div>
           </div>
@@ -85,10 +85,10 @@ export function Header() {
       <Card className="flex mx-1 w-60">
         <CardContent className="p-4 flex h-[68px] w-full items-center justify-between">
           <div className="flex w-full flex-col items-start justify-between">
-            <div className="text-xs font-medium">Dias Sem Quedas</div>
-            <div className="text-sm font-bold">{daysSinceLastOutage}</div>
+            <div className="text-xs sm:text-sm 2xl:text-lg font-medium">Dias Sem Quedas</div>
+            <div className="text-xs sm:text-sm 2xl:text-lg font-bold">{daysSinceLastOutage}</div>
           </div>
-          <div className="text-xs text-muted-foreground">
+          <div className="text-[10px] sm:text-xs 2xl:text-sm text-muted-foreground">
             {formatTime(secondsUntilNextDay)}
           </div>
         </CardContent>
@@ -97,8 +97,8 @@ export function Header() {
         <Card key={index} className="flex mx-1 w-60">
           <CardContent className="p-4 flex flex-col h-[68px] w-full items-center justify-between">
             <div className="flex w-full items-center justify-between">
-              <div className="text-xs font-bold">{update.name}</div>
-              <div className="text-xs text-muted-foreground font-bold">
+              <div className="text-xs sm:text-sm 2xl:text-lg font-bold">{update.name}</div>
+              <div className="text-[10px] sm:text-xs 2xl:text-sm text-muted-foreground font-bold">
                 {formatTime(update.timeLeft)}
               </div>
             </div>
