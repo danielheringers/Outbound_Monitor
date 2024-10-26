@@ -73,7 +73,7 @@ export default function StatusBadges() {
         />
         <StatusBadge
           label="Impressão"
-          status="amber"
+          status="lime"
           icon={<Printer className="h-4 w-4 stroke-[1px]" />}
         />
         <StatusBadge
@@ -83,7 +83,7 @@ export default function StatusBadges() {
         />
         <StatusBadge
           label="Cancelar"
-          status="red"
+          status="lime"
           icon={<CrossCircledIcon className="h-4 w-4" />}
         />
         <StatusBadge
