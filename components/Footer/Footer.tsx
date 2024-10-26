@@ -54,7 +54,7 @@ const StatusBadge: React.FC<StateStatus> = ({ name, status }) => {
         <TooltipTrigger asChild>
           <Badge
             variant="outline"
-            className="flex items-center gap-2 cursor-pointer"
+            className="flex items-center gap-2 cursor-pointer text-[14px]"
           >
             {name}
             <span className="relative flex h-3 w-3">
@@ -151,7 +151,7 @@ export function Footer() {
     <footer className="border-t">
       <div className="px-4 pb-4">
         <div className="flex flex-col w-full">
-          <div>
+          <div className="flex flex-row w-full pt-2 justify-between">
             <h3 className="text-lg font-semibold">Sefaz</h3>
             <div className="flex flex-wrap gap-2">
               {generalStatuses.map((state) => (
