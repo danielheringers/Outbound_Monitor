@@ -3,12 +3,14 @@
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
 export interface NFeData {
+  label: "Emissões";
   period: string;
   count: number;
   meanResponseTime: number;
 }
 
 export interface NFSeData {
+  label: "Emissões";
   period: string;
   count: number;
   meanResponseTime: number;

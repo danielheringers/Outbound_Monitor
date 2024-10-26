@@ -111,15 +111,7 @@ const StatusBadgeGeral: React.FC<StateStatus> = ({ name, status, description }) 
 }
 
 export function Footer() {
-  const { generalStatuses, stateStatuses, isLoading } = useMonitor()
-
-  if (isLoading) {
-    return (
-      <footer className="border-t">
-        <div className="px-4 py-4">Carregando...</div>
-      </footer>
-    )
-  }
+  const { generalStatuses, stateStatuses } = useMonitor()
 
   return (
     <footer className="border-t">

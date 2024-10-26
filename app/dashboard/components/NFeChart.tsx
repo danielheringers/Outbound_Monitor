@@ -9,7 +9,7 @@ export function NFeChart() {
   const { nfeData } = useMonitor()
 
   const chartConfig = {
-    NFe: {
+    count: {
       label: "NFe",
       theme: {
         light: "hsl(var(--chart-1))",
@@ -59,7 +59,7 @@ export function NFeChart() {
             <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--grid))" />
             <XAxis dataKey="period" />
             <YAxis domain={yDomain} />
-            <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent indicator="line" />} />
             <ReferenceLine y={150} stroke="#fbbf24" strokeDasharray="3 3" />
             <ReferenceLine y={40} stroke="#f43f5e" strokeDasharray="3 3" />
             <defs>

@@ -9,7 +9,7 @@ export function NFSeChart() {
   const { nfseData } = useMonitor()
 
   const chartConfig = {
-    NFSe: {
+    count: {
       label: "NFSe",
       theme: {
         light: "hsl(var(--chart-1))",
