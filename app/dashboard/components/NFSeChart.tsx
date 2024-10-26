@@ -6,7 +6,7 @@ import { ChartContainer, ChartTooltip, ChartTooltipContent } from "@/components/
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, ReferenceLine } from "recharts"
 
 export function NFSeChart() {
-  const { nfseData, isLoading } = useMonitor()
+  const { nfseData } = useMonitor()
 
   const chartConfig = {
     NFSe: {
@@ -18,12 +18,8 @@ export function NFSeChart() {
     },
   }
 
-  if (isLoading) {
-    return <Card className="w-full mt-4"><CardContent>Carregando...</CardContent></Card>
-  }
-
   const notesToday = nfseData.reduce((sum, item) => sum + item.count, 0)
-  const notesThisMonth = notesToday // Assuming the data is for today only
+  const notesThisMonth = notesToday
 
   const maxCount = Math.max(...nfseData.map(item => item.count))
   const minCount = Math.min(...nfseData.map(item => item.count))

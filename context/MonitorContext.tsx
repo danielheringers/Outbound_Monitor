@@ -2,15 +2,21 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
 
-// Tipos para os dados
-type NFeData = {
-  period: string
-  count: number
+export interface NFeData {
+  period: string;
+  count: number;
+  meanResponseTime: number;
 }
 
-type NFSeData = {
-  period: string
-  count: number
+export interface NFSeData {
+  period: string;
+  count: number;
+  meanResponseTime: number;
+}
+
+export interface Metrics {
+  nfe: NFeData[];
+  nfse: NFSeData[];
 }
 
 type ApiResponse = {
@@ -38,7 +44,6 @@ type StatusData = {
   description: string
 }
 
-// Tipo para o contexto
 type MonitorContextType = {
   nfeData: NFeData[]
   nfseData: NFSeData[]
@@ -73,7 +78,7 @@ const mapApiStatusToComponentStatus = (apiStatus: string): Status => {
 }
 
 const createStateBadges = (item: StatusData): StatusData[] => {
-  if (item.name.length === 4 && item.description) {
+  if (item.name && item.name.length === 4 && item.description) {
     const states = item.description.split(', ')
     return states.map((state) => ({
       name: state,
@@ -92,81 +97,68 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [stateStatuses, setStateStatuses] = useState<StatusData[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
-  const fetchNFeData = async () => {
-    try {
-      const response = await fetch('/api/metrics')
-      if (!response.ok) {
-        throw new Error('Falha ao buscar métricas de NFe')
-      }
-      const data = await response.json()
-      const formattedData = data.nfe.map((item: NFeData) => ({
-        ...item,
-        period: formatDate(item.period)
-      }))
-      setNfeData(formattedData)
-    } catch (err) {
-      console.error('Erro ao carregar dados de NFe:', err)
+  const fetchData = async (endpoint: string) => {
+    const response = await fetch(`/api/${endpoint}`)
+    if (!response.ok) {
+      throw new Error(`Falha ao buscar dados de ${endpoint}`)
     }
+    return response.json()
   }
 
-  const fetchNFSeData = async () => {
+  const fetchMetricsData = async () => {
     try {
-      const response = await fetch('/api/metrics')
-      if (!response.ok) {
-        throw new Error('Falha ao buscar métricas de NFSe')
-      }
-      const data = await response.json()
-      const formattedData = data.nfse.map((item: NFSeData) => ({
+      const data: Metrics = await fetchData('metrics')
+      const formattedNFeData = data.nfe.map((item: NFeData) => ({
         ...item,
         period: formatDate(item.period)
       }))
-      setNfseData(formattedData)
+      const formattedNFSeData = data.nfse.map((item: NFSeData) => ({
+        ...item,
+        period: formatDate(item.period)
+      }))
+      setNfeData(formattedNFeData)
+      setNfseData(formattedNFSeData)
     } catch (err) {
-      console.error('Erro ao carregar dados de NFSe:', err)
+      console.error('Erro ao carregar dados de métricas:', err)
+      setNfeData([])
+      setNfseData([])
     }
   }
 
   const fetchStatusData = async () => {
     try {
-      const response = await fetch(
-        "https://monitorsefaz.webmaniabr.com/v2/components.json"
-      )
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-      const data = await response.json()
-
-      if (!Array.isArray(data)) {
-        if (typeof data === "object" && data !== null) {
-          const possibleArray = Object.values(data).find(Array.isArray)
-          if (possibleArray) {
-            processData(possibleArray)
-            return
-          }
-        }
-        throw new Error(`Data is not an array. Received: ${typeof data}`)
-      }
-
+      const data: ApiResponse[] = await fetchData('status')
       processData(data)
     } catch (error) {
       console.error("Error fetching status data:", error)
+      setGeneralStatuses([])
+      setStateStatuses([])
     }
   }
 
   const processData = (data: ApiResponse[]) => {
-    const updatedStatuses = data.map((item: ApiResponse) => ({
-      name: item.name,
-      status: mapApiStatusToComponentStatus(item.status),
-      group: item.group,
-      description: item.description
-    }))
+    if (!Array.isArray(data)) {
+      console.error("Status data is not an array")
+      setGeneralStatuses([])
+      setStateStatuses([])
+      return
+    }
+
+    const updatedStatuses = data
+      .filter((item): item is ApiResponse => !!item && typeof item === 'object' && 'name' in item && 'status' in item)
+      .map((item: ApiResponse) => ({
+        name: item.name,
+        status: mapApiStatusToComponentStatus(item.status),
+        group: item.group,
+        description: item.description
+      }))
 
     const general = updatedStatuses
-      .filter((status) => status.name.length > 4)
+      .filter((status) => status.name && status.name.length > 4)
       .sort((a, b) => a.name.localeCompare(b.name))
 
     const states = updatedStatuses
-      .filter((status) => status.name.length <= 4 && status.group.name === "Autorizadores de NF-e")
+      .filter((status) => status.name && status.name.length <= 4 && status.group && status.group.name === "Autorizadores de NF-e")
       .flatMap(createStateBadges)
       .sort((a, b) => a.name.localeCompare(b.name))
 
@@ -177,8 +169,7 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const updateAllData = async () => {
     setIsLoading(true)
     await Promise.all([
-      fetchNFeData(),
-      fetchNFSeData(),
+      fetchMetricsData(),
       fetchStatusData()
     ])
     setIsLoading(false)
@@ -188,7 +179,6 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
     updateAllData()
     const intervalId = setInterval(updateAllData, 5 * 60 * 1000)
     return () => clearInterval(intervalId)
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   return (
