@@ -3,23 +3,24 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import {
-  ChevronFirst,
-  ChevronLast,
-  Home,
-  MessageSquare,
-  Bell,
-  Settings,
-  LogOut,
-  AppWindowMac,
-} from "lucide-react";
+  ChevronLeftIcon,
+  ChevronRightIcon,
+  HomeIcon,
+  ChatBubbleIcon,
+  BellIcon,
+  GearIcon,
+  ExitIcon,
+} from "@radix-ui/react-icons";
 import { ModeToggle } from "../DarkModeToggle/DarkMode";
-
-type SidebarProps = {
+export function Sidebar({
+  expanded,
+  setExpanded,
+  className,
+}: {
   expanded: boolean;
   setExpanded: (expanded: boolean) => void;
-};
-
-export function Sidebar({ expanded, setExpanded }: SidebarProps) {
+  className?: string;
+}) {
   const router = useRouter();
 
   const handleLogout = () => {
@@ -29,20 +30,21 @@ export function Sidebar({ expanded, setExpanded }: SidebarProps) {
   return (
     <aside
       className={cn(
-        "h-screen",
-        expanded ? "w-64" : "w-16",
+        "h-full",
+        expanded ? "w-40" : "w-16",
         "transition-all duration-300 ease-in-out",
-        "bg-secondary text-secondary-foreground",
+        "text-secondary-foreground border",
         "flex flex-col",
-        "relative" // Mantém isso para o posicionamento do botão
+        "relative",
+        className
       )}
     >
       <nav className="h-full flex flex-col">
-        <div className="p-4 pb-2 flex justify-between items-center">
-          <AppWindowMac />
+        <div className="p-4 pb-2 flex justify-center items-center">
+          <ModeToggle />
         </div>
         <ul className="flex-1 px-3">
-          {[{ icon: Home, label: "Home", href: "/dashboard" }].map(
+          {[{ icon: HomeIcon, label: "Home", href: "/dashboard" }].map(
             ({ icon: Icon, label, href }) => (
               <li key={label} className="mb-2">
                 <Link
@@ -62,9 +64,9 @@ export function Sidebar({ expanded, setExpanded }: SidebarProps) {
 
         <div className="border-t flex flex-col p-3">
           {[
-            { icon: Bell, label: "Notifications", onClick: () => {} },
-            { icon: MessageSquare, label: "Messages", onClick: () => {} },
-            { icon: Settings, label: "Settings", onClick: () => {} },
+            { icon: BellIcon, label: "Notifications", onClick: () => {} },
+            { icon: ChatBubbleIcon, label: "Messages", onClick: () => {} },
+            { icon: GearIcon, label: "Settings", onClick: () => {} },
           ].map(({ icon: Icon, label, onClick }) => (
             <Button
               key={label}
@@ -79,7 +81,6 @@ export function Sidebar({ expanded, setExpanded }: SidebarProps) {
               {expanded && <span className="ml-3">{label}</span>}
             </Button>
           ))}
-          <ModeToggle/>
           <Button
             variant="ghost"
             className={cn(
@@ -88,7 +89,7 @@ export function Sidebar({ expanded, setExpanded }: SidebarProps) {
             )}
             onClick={handleLogout}
           >
-            <LogOut className="h-5 w-5" />
+            <ExitIcon className="h-5 w-5" />
             {expanded && <span className="ml-3">Logout</span>}
           </Button>
         </div>
@@ -103,7 +104,7 @@ export function Sidebar({ expanded, setExpanded }: SidebarProps) {
           "p-1.5 h-8 w-6"
         )}
       >
-        {expanded ? <ChevronFirst /> : <ChevronLast />}
+        {expanded ? <ChevronLeftIcon /> : <ChevronRightIcon />}
       </Button>
     </aside>
   );

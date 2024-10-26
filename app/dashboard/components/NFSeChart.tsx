@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   AreaChart,
   Area,
@@ -18,42 +17,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { NFSeData } from "./types";
-
-const getStatusColor = (status: "lime" | "amber" | "red") => {
-  switch (status) {
-    case "lime":
-      return "bg-lime-500";
-    case "amber":
-      return "bg-amber-500";
-    case "red":
-      return "bg-red-500";
-    default:
-      return "bg-gray-500";
-  }
-};
-
-const StatusBadge = React.memo(
-  ({ label, status }: { label: string; status: "lime" | "amber" | "red" }) => (
-    <Badge variant="outline" className="flex items-center gap-2 mt-0">
-      {label}
-      <span className="relative flex h-3 w-3">
-        <span
-          className={`animate-ping absolute inline-flex h-full w-full rounded-full ${getStatusColor(
-            status
-          )} opacity-75`}
-        ></span>
-        <span
-          className={`relative inline-flex rounded-full h-3 w-3 ${getStatusColor(
-            status
-          )}`}
-        ></span>
-      </span>
-    </Badge>
-  )
-);
-
-StatusBadge.displayName = "StatusBadge";
-
+import StatusBadges from "@/components/StatusBadge";
 export function NFSeChart() {
   const [chartData, setChartData] = useState<NFSeData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -61,23 +25,23 @@ export function NFSeChart() {
 
   const fetchData = async () => {
     try {
-      const response = await fetch('/api/metrics');
+      const response = await fetch("/api/metrics");
       if (!response.ok) {
-        throw new Error('Falha ao buscar métricas');
+        throw new Error("Falha ao buscar métricas");
       }
       const data = await response.json();
       setChartData(data.nfse);
       setIsLoading(false);
     } catch (err) {
-      console.error('Erro ao carregar dados do gráfico:', err);
-      setError('Falha ao carregar dados do gráfico');
+      console.error("Erro ao carregar dados do gráfico:", err);
+      setError("Falha ao carregar dados do gráfico");
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
     fetchData();
-    const interval = setInterval(fetchData, 50000); // Atualiza a cada 50 segundos
+    const interval = setInterval(fetchData, 120000);
     return () => clearInterval(interval);
   }, []);
 
@@ -97,8 +61,8 @@ export function NFSeChart() {
   const memoizedChart = useMemo(() => {
     if (chartData.length === 0) return null;
 
-    const maxCount = Math.max(...chartData.map(item => item.count));
-    const minCount = Math.min(...chartData.map(item => item.count));
+    const maxCount = Math.max(...chartData.map((item) => item.count));
+    const minCount = Math.min(...chartData.map((item) => item.count));
     const yDomain = [Math.max(0, minCount - 50), maxCount + 50];
 
     return (
@@ -150,25 +114,26 @@ export function NFSeChart() {
   }, [notesToday]);
 
   if (isLoading) {
-    return <Card className="w-full mt-4"><CardContent>Carregando...</CardContent></Card>;
+    return (
+      <Card className="w-full mt-4">
+        <CardContent>Carregando...</CardContent>
+      </Card>
+    );
   }
 
   if (error) {
-    return <Card className="w-full mt-4"><CardContent>{error}</CardContent></Card>;
+    return (
+      <Card className="w-full mt-4">
+        <CardContent>{error}</CardContent>
+      </Card>
+    );
   }
 
   return (
     <Card className="w-full mt-4">
-      <CardHeader className="flex flex-row w-full items-center justify-between">
-        <CardTitle className="flex items-center h-full">NFSe</CardTitle>
-        <div className="flex gap-2 !mt-0 items-center h-full">
-          <StatusBadge label="Emissão" status="lime" />
-          <StatusBadge label="Consulta" status="lime" />
-          <StatusBadge label="Impressão" status="amber" />
-          <StatusBadge label="C. Correção" status="lime" />
-          <StatusBadge label="Cancelar" status="red" />
-          <StatusBadge label="Inativação" status="lime" />
-        </div>
+      <CardHeader className="flex flex-row w-full items-center justify-between gap-6">
+        <CardTitle className="flex items-center self-end text-[24px] h-full">NFSe</CardTitle>
+        <StatusBadges/>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 gap-4 mb-4 p-2">

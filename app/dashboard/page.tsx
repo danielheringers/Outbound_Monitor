@@ -4,7 +4,7 @@ import { DashboardContent } from './dashboard-content'
 
 export default function DashboardPage() {
   const cookieStore = cookies()
-  const token = cookieStore.get('authToken')
+  const token = cookieStore.get('token')
 
   if (!token) {
     redirect('/login')

@@ -9,10 +9,10 @@ import { NFeChart } from "./components/NFeChart";
 
 export function MainContent() {
   return (
-    <div className="flex flex-col w-full h-screen justify-between">
-      <main className="flex-1 transition-all duration-300 ease-in-out">
+    <div className="space-y-6 h-full overflow-auto">
+      <main>
         <Header />
-        <div className="flex w-full justify-between gap-2 p-2">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-2">
           <NFSeChart />
           <NFeChart />
         </div>

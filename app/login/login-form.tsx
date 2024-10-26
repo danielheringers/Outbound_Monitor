@@ -25,19 +25,21 @@ export default function LoginForm() {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          user_email: email,
-          user_password: password,
+          username: email,
+          password: password,
         }),
       })
 
       const data = await response.json()
-
+      console.log("Data: ", data)
       if (data.success) {
         toast({
           title: "Login bem-sucedido",
           description: "Redirecionando para a página principal...",
         })
+        console.log("Chegou Aqui!")
         router.push('/dashboard')
+        console.log("Passou!")
       } else {
         throw new Error(data.error || 'Falha na autenticação')
       }

@@ -2,7 +2,6 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   AreaChart,
   Area,
@@ -18,41 +17,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { NFeData } from "./types";
-
-const getStatusColor = (status: "lime" | "amber" | "red") => {
-  switch (status) {
-    case "lime":
-      return "bg-lime-500";
-    case "amber":
-      return "bg-amber-500";
-    case "red":
-      return "bg-red-500";
-    default:
-      return "bg-gray-500";
-  }
-};
-
-const StatusBadge = React.memo(
-  ({ label, status }: { label: string; status: "lime" | "amber" | "red" }) => (
-    <Badge variant="outline" className="flex items-center gap-2 mt-0">
-      {label}
-      <span className="relative flex h-3 w-3">
-        <span
-          className={`animate-ping absolute inline-flex h-full w-full rounded-full ${getStatusColor(
-            status
-          )} opacity-75`}
-        ></span>
-        <span
-          className={`relative inline-flex rounded-full h-3 w-3 ${getStatusColor(
-            status
-          )}`}
-        ></span>
-      </span>
-    </Badge>
-  )
-);
-
-StatusBadge.displayName = "StatusBadge";
+import StatusBadges from "@/components/StatusBadge";
 
 const playAlertSound = () => {
   const audio = new Audio('alert.mp3');
@@ -176,14 +141,7 @@ export function NFeChart() {
     <Card className="w-full mt-4">
       <CardHeader className="flex flex-row w-full items-center justify-between">
         <CardTitle className="flex items-center h-full">NFe</CardTitle>
-        <div className="flex gap-2 !mt-0 items-center h-full">
-          <StatusBadge label="Emissão" status="lime" />
-          <StatusBadge label="Consulta" status="lime" />
-          <StatusBadge label="Impressão" status="amber" />
-          <StatusBadge label="C. Correção" status="lime" />
-          <StatusBadge label="Cancelar" status="red" />
-          <StatusBadge label="Inativação" status="lime" />
-        </div>
+        <StatusBadges/>
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-3 gap-4 mb-4 p-2">
