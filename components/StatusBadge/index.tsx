@@ -16,6 +16,7 @@ import {
   MinusCircledIcon,
 } from '@radix-ui/react-icons';
 import { Printer } from 'lucide-react';
+import { Separator } from '../ui/separator';
 
 type StatusType = 'lime' | 'amber' | 'red';
 
@@ -40,6 +41,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ label, status, icon }) => {
           className="flex items-center gap-2 p-2 cursor-pointer"
         >
           {icon}
+          <Separator orientation="vertical"/>
           <span className="relative flex h-3 w-3">
             <span
               className={`animate-ping absolute inline-flex h-full w-full rounded-full ${statusColors[status]} opacity-75`}

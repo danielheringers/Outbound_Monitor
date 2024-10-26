@@ -57,6 +57,7 @@ const StatusBadge: React.FC<StateStatus> = ({ name, status }) => {
             className="flex items-center gap-2 cursor-pointer text-[14px]"
           >
             {name}
+            <Separator orientation="vertical"/>
             <span className="relative flex h-3 w-3">
               <span
                 className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${getStatusColor(
@@ -100,6 +101,7 @@ const StatusBadgeGeral: React.FC<StateStatus> = ({ name, status }) => {
             className="flex items-center gap-2 cursor-pointer text-[16px]"
           >
             {name}
+            <Separator orientation="vertical"/>
             <span className="relative flex h-3 w-3">
               <span
                 className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${getStatusColor(
@@ -192,9 +194,9 @@ export function Footer() {
     <footer className="border-t">
       <div className="pb-4">
         <div className="flex flex-col w-full">
-          <div className="flex flex-row w-full pt-2 justify-between px-4">
+          <div className="flex flex-row w-full pt-2 justify-start px-4">
             <h3 className="text-lg font-semibold">Sefaz</h3>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex gap-2 w-full items-center justify-center">
               {generalStatuses.map((state) => (
                 <StatusBadgeGeral
                   key={state.name}
