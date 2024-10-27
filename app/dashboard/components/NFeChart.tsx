@@ -11,9 +11,11 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Separator } from "@/components/ui/separator";
 import QueueStatusBadges from "@/components/QueueStatusBadge";
 import { formatNumber } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 export function NFeChart() {
   const { nfeData, queueData } = useMonitor();
+  const [queueCount, setQueueCount] = useState(0);
 
   const chartConfig = {
     count: {
@@ -27,7 +29,11 @@ export function NFeChart() {
 
   const notesToday = nfeData.reduce((sum, item) => sum + item.count, 0);
   const notesThisMonth = notesToday;
-  const queueCount = queueData.nfeEmit?.totalMessagesReady || 0;
+
+  useEffect(() => {
+    const newQueueCount = queueData.nfeEmit?.totalMessagesReady || 0;
+    setQueueCount(newQueueCount);
+  }, [queueData]);
 
   const maxCount = Math.max(...nfeData.map((item) => item.count));
   const minCount = Math.min(...nfeData.map((item) => item.count));
@@ -36,26 +42,26 @@ export function NFeChart() {
   return (
     <Card className="w-full">
       <CardHeader className="flex flex-col w-full items-center justify-between gap-2 sm:gap-6 lg:flex-row">
-        <CardTitle className="flex items-center text-[24px] h-full">
+        <CardTitle className="flex items-center text-lg md:text-md lg:text-2xl h-full">
           NFe
         </CardTitle>
         <QueueStatusBadges />
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-4 mb-4 p-2">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4 mb-4 p-2">
           <Card className="rounded-md">
             <CardContent className="flex p-2 items-center justify-between h-full">
-              <div className="text-md text-muted-foreground w-full">Hoje</div>
-              <Separator orientation="vertical" />
+              <div className="text-sm sm:text-md text-muted-foreground w-full">Hoje</div>
+              <Separator orientation="vertical" className="mx-2" />
               <div className="text-lg sm:text-md md:text-lg font-bold pl-2 sm:pl-4 pr-2">
                 {formatNumber(notesToday)}
               </div>
             </CardContent>
           </Card>
           <Card className="rounded-md">
-            <CardContent className="flex p-2 px-4 items-center justify-between h-full">
-              <div className="text-md text-muted-foreground w-full">Mês</div>
-              <Separator orientation="vertical" />
+            <CardContent className="flex p-2 items-center justify-between h-full">
+              <div className="text-sm sm:text-md text-muted-foreground w-full">Mês</div>
+              <Separator orientation="vertical" className="mx-2" />
               <div className="text-lg sm:text-md md:text-lg font-bold pl-2 sm:pl-4 pr-2">
                 {formatNumber(notesThisMonth)}
               </div>
@@ -63,10 +69,10 @@ export function NFeChart() {
           </Card>
           <Card className="rounded-md">
             <CardContent className="flex p-2 items-center justify-between h-full">
-              <div className="text-md text-muted-foreground w-full">
+              <div className="text-sm sm:text-md text-muted-foreground w-full">
                 Na Fila
               </div>
-              <Separator orientation="vertical" />
+              <Separator orientation="vertical" className="mx-2" />
               <div className="text-lg sm:text-md md:text-lg font-bold pl-2 sm:pl-4 pr-2">
                 {formatNumber(queueCount)}
               </div>

@@ -11,9 +11,11 @@ import { AreaChart, Area, XAxis, YAxis, CartesianGrid } from "recharts";
 import { Separator } from "@/components/ui/separator";
 import NFSERPSStatusBadge from "@/components/QueueStatusBadge/NFSERPSStatusBadge";
 import { formatNumber } from "@/lib/utils";
+import { useEffect, useState } from "react";
 
 export function NFSeChart() {
   const { nfseData, queueData } = useMonitor();
+  const [queueCount, setQueueCount] = useState(0);
 
   const chartConfig = {
     count: {
@@ -27,13 +29,16 @@ export function NFSeChart() {
 
   const notesToday = nfseData.reduce((sum, item) => sum + item.count, 0);
   const notesThisMonth = notesToday;
-  const nfseEmit = queueData.nfseEmit?.totalMessagesReady || 0;
-  const nfseCancel = queueData.nfseCancel?.totalMessagesReady || 0;
-  const nfseQueryNfse = queueData.nfseQueryNfse?.totalMessagesReady || 0;
-  const nfseQueryRpsProtocol =
-    queueData.nfseQueryRpsProtocol?.totalMessagesReady || 0;
-  const RPS = queueData.RPS?.totalMessagesReady || 0;
-  const queueCount = nfseEmit + nfseCancel + nfseQueryNfse + nfseQueryRpsProtocol + RPS || 0;
+
+  useEffect(() => {
+    const nfseEmit = queueData.nfseEmit?.totalMessagesReady || 0;
+    const nfseCancel = queueData.nfseCancel?.totalMessagesReady || 0;
+    const nfseQueryNfse = queueData.nfseQueryNfse?.totalMessagesReady || 0;
+    const nfseQueryRpsProtocol = queueData.nfseQueryRpsProtocol?.totalMessagesReady || 0;
+    const RPS = queueData.RPS?.totalMessagesReady || 0;
+    const newQueueCount = nfseEmit + nfseCancel + nfseQueryNfse + nfseQueryRpsProtocol + RPS;
+    setQueueCount(newQueueCount);
+  }, [queueData]);
 
   const maxCount = Math.max(...nfseData.map((item) => item.count));
   const minCount = Math.min(...nfseData.map((item) => item.count));
