@@ -10,6 +10,7 @@ import {
   BellIcon,
   GearIcon,
   ExitIcon,
+  ListBulletIcon,
 } from "@radix-ui/react-icons";
 import { ModeToggle } from "../DarkModeToggle/DarkMode";
 export function Sidebar({
@@ -44,22 +45,23 @@ export function Sidebar({
           <ModeToggle />
         </div>
         <ul className="flex-1 px-3">
-          {[{ icon: HomeIcon, label: "Home", href: "/dashboard" }].map(
-            ({ icon: Icon, label, href }) => (
-              <li key={label} className="mb-2">
-                <Link
-                  href={href}
-                  className={cn(
-                    "flex items-center p-2 rounded-lg hover:bg-primary/10",
-                    !expanded && "justify-center"
-                  )}
-                >
-                  <Icon className="h-5 w-5" />
-                  {expanded && <span className="ml-3">{label}</span>}
-                </Link>
-              </li>
-            )
-          )}
+          {[
+            { icon: HomeIcon, label: "Home", href: "/dashboard" },
+            { icon: ListBulletIcon, label: "Filas", href: "/Queue" },
+          ].map(({ icon: Icon, label, href }) => (
+            <li key={label} className="mb-2">
+              <Link
+                href={href}
+                className={cn(
+                  "flex items-center p-2 rounded-lg hover:bg-primary/10",
+                  !expanded && "justify-center"
+                )}
+              >
+                <Icon className="h-5 w-5" />
+                {expanded && <span className="ml-3">{label}</span>}
+              </Link>
+            </li>
+          ))}
         </ul>
 
         <div className="border-t flex flex-col p-3">
