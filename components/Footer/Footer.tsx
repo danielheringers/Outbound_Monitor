@@ -38,18 +38,18 @@ const StatusBadge: React.FC<StateStatus> = ({ name, status, description }) => {
         <TooltipTrigger asChild>
           <Badge
             variant="outline"
-            className="flex items-center gap-2 cursor-pointer text-[12px]"
+            className="flex items-center gap-2 cursor-pointer text-[10px] sm:text-[12px]"
           >
             {name}
           
-            <span className="relative flex h-3 w-3">
+            <span className="relative flex h-2 w-2 sm:h-3 sm:w-3">
               <span
                 className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${getStatusColor(
                   status
                 )}`}
               ></span>
               <span
-                className={`relative inline-flex rounded-full h-3 w-3 ${getStatusColor(
+                className={`relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 ${getStatusColor(
                   status
                 )}`}
               ></span>
@@ -83,18 +83,18 @@ const StatusBadgeGeral: React.FC<StateStatus> = ({ name, status, description }) 
         <TooltipTrigger asChild>
           <Badge
             variant="outline"
-            className="flex items-center gap-2 cursor-pointer text-[16px]"
+            className="flex items-center gap-2 cursor-pointer text-[12px] sm:text-[16px]"
           >
             {name}
-            <Separator orientation="vertical"/>
-            <span className="relative flex h-3 w-3">
+            <Separator orientation="vertical" className="h-4"/>
+            <span className="relative flex h-2 w-2 sm:h-3 sm:w-3">
               <span
                 className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${getStatusColor(
                   status
                 )}`}
               ></span>
               <span
-                className={`relative inline-flex rounded-full h-3 w-3 ${getStatusColor(
+                className={`relative inline-flex rounded-full h-2 w-2 sm:h-3 sm:w-3 ${getStatusColor(
                   status
                 )}`}
               ></span>
@@ -117,9 +117,9 @@ export function Footer() {
     <footer className="border-t">
       <div className="pb-4">
         <div className="flex flex-col w-full">
-          <div className="flex flex-row w-full pt-2 justify-start px-4">
-            <h3 className="text-lg font-semibold">Sefaz</h3>
-            <div className="flex gap-2 w-full items-center justify-center">
+          <div className="flex flex-col sm:flex-row w-full pt-2 justify-start px-2 sm:px-4">
+            <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-0">Sefaz</h3>
+            <div className="flex flex-wrap gap-2 w-full items-center justify-start sm:justify-center">
               {generalStatuses.map((state) => (
                 <StatusBadgeGeral
                   key={state.name}
@@ -133,7 +133,7 @@ export function Footer() {
           </div>
           <Separator className="my-2" />
           <div>
-            <div className="flex flex-wrap gap-2 justify-center px-4">
+            <div className="flex flex-wrap gap-1 sm:gap-2 justify-start sm:justify-center px-2 sm:px-4">
               {stateStatuses.map((state) => (
                 <StatusBadge
                   key={state.name}
