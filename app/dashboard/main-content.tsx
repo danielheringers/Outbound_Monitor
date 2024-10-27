@@ -12,7 +12,9 @@ export function MainContent() {
     <div className="space-y-6 h-full overflow-auto">
       <main>
         <Header />
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-2">
+        <div className="flex w-full items-center justify-center pt-2">
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-2 mt-4">
           <NFSeChart />
           <NFeChart />
         </div>

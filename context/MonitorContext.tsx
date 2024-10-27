@@ -46,11 +46,26 @@ type StatusData = {
   description: string
 }
 
+type QueueData = {
+  name: string
+  label: string
+  totalMessagesReady: number
+}
+
 type MonitorContextType = {
   nfeData: NFeData[]
   nfseData: NFSeData[]
   generalStatuses: StatusData[]
   stateStatuses: StatusData[]
+  queueData: {
+    nfeEmit: QueueData | null
+    nfseEmit: QueueData | null
+    nfseCancel: QueueData | null
+    nfseQueryNfse: QueueData | null
+    nfseQueryRpsProtocol: QueueData | null
+    cteosEmit: QueueData | null
+    RPS: QueueData | null
+  }
   updateAllData: () => Promise<void>
   isLoading: boolean
 }
@@ -97,6 +112,15 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [nfseData, setNfseData] = useState<NFSeData[]>([])
   const [generalStatuses, setGeneralStatuses] = useState<StatusData[]>([])
   const [stateStatuses, setStateStatuses] = useState<StatusData[]>([])
+  const [queueData, setQueueData] = useState<MonitorContextType['queueData']>({
+    nfeEmit: null,
+    nfseEmit: null,
+    cteosEmit: null,
+    nfseCancel: null,
+    nfseQueryNfse: null,
+    nfseQueryRpsProtocol: null,
+    RPS: null,
+  })
   const [isLoading, setIsLoading] = useState(false)
 
   const fetchData = async (endpoint: string) => {
@@ -138,6 +162,38 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
     }
   }
 
+  const fetchQueueData = async () => {
+    try {
+      const data: QueueData[] = await fetchData('queues')
+      const rpsQueues = data.filter(queue => queue.name.startsWith('rps-'))
+      const rpsTotal = rpsQueues.reduce((sum, queue) => sum + queue.totalMessagesReady, 0)
+      setQueueData({
+        nfeEmit: data.find(queue => queue.name === 'nfe-emit') || null,
+        nfseEmit: data.find(queue => queue.name === 'nfse-emit') || null,
+        nfseCancel: data.find(queue => queue.name === 'nfse-cancel') || null,
+        nfseQueryNfse: data.find(queue => queue.name === 'nfse-queryNfse') || null,
+        nfseQueryRpsProtocol: data.find(queue => queue.name === 'nfse-queryRpsProtocol') || null,
+        cteosEmit: data.find(queue => queue.name === 'cteOs-emit') || null,
+        RPS: {
+          name: 'RPS',
+          label: 'RPS',
+          totalMessagesReady: rpsTotal
+        },
+      })
+    } catch (error) {
+      console.error("Error fetching queue data:", error)
+      setQueueData({
+        nfeEmit: null,
+        nfseEmit: null,
+        cteosEmit: null,
+        nfseCancel: null,
+        nfseQueryNfse: null,
+        nfseQueryRpsProtocol: null,
+        RPS: null,
+      })
+    }
+  }
+
   const processData = (data: ApiResponse[]) => {
     if (!Array.isArray(data)) {
       console.error("Status data is not an array")
@@ -172,7 +228,8 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setIsLoading(true)
     await Promise.all([
       fetchMetricsData(),
-      fetchStatusData()
+      fetchStatusData(),
+      fetchQueueData()
     ])
     setIsLoading(false)
   }
@@ -189,6 +246,7 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
       nfseData,
       generalStatuses,
       stateStatuses,
+      queueData,
       updateAllData,
       isLoading
     }}>

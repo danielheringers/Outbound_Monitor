@@ -42,10 +42,10 @@ const generateChartData = () => {
 
 const responseCategories = [
   { value: 1.00, label: "Lento", color: "#FF4136" },
-  { value: 0.80, label: "Aceitável", color: "#FF851B" },
+  { value: 0.75, label: "Aceitável", color: "#FF851B" },
   { value: 0.50, label: "Bom", color: "#0074D9" },
   { value: 0.25, label: "Excelente", color: "#2ECC40" },
-  { value: 0.00, label: "Perfect", color: "#2ecc400" },
+  { value: 0.00, label: "Dream", color: "#802ecc" },
 ];
 
 export function ResponseTimeChart() {
@@ -103,7 +103,7 @@ export function ResponseTimeChart() {
               />
               <YAxis
                 domain={[0.10, 1]}
-                ticks={[0.25, 0.50, 0.80, 1.00]}
+                ticks={[0, 0.25, 0.50, 0.75, 1.00]}
                 tick={<CustomYAxisTick x={undefined} y={undefined} payload={undefined} />}
                 axisLine={false}
                 tickLine={false}
