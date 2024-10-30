@@ -15,25 +15,35 @@ function isTvBrowser() {
   return /smart-tv|smarttv|googletv|appletv|hbbtv|pov_tv|netcast.tv/.test(userAgent);
 }
 
+function getTvIdentifier() {
+  if (typeof window === 'undefined') return null;
+  return localStorage.getItem('tv_identifier');
+}
+
 export default function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isTv, setIsTv] = useState(false)
-  const [error, setError] = useState<string | null>(null)
+  const [tvIdentifier, setTvIdentifier] = useState<string | null>(null)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [error, setError] = useState<any>(null)
   const router = useRouter()
 
-  // Move browser detection to useEffect to avoid SSR issues
   useEffect(() => {
-    setIsTv(isTvBrowser());
+    const tv = isTvBrowser();
+    setIsTv(tv);
+    if (tv) {
+      const identifier = getTvIdentifier();
+      setTvIdentifier(identifier);
+    }
   }, []);
 
-  // Separate useEffect for auto-login to avoid dependency issues
   useEffect(() => {
-    if (isTv) {
+    if (isTv && tvIdentifier) {
       handleSubmit();
     }
-  }, [isTv]); // Only trigger when isTv changes
+  }, [isTv, tvIdentifier]);
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -50,10 +60,12 @@ export default function LoginForm() {
           username: email,
           password: password,
           isTvBrowser: isTv,
+          tvIdentifier: tvIdentifier,
         }),
       });
 
       const data = await response.json();
+      
       if (data.success) {
         toast({
           title: "Login bem-sucedido",
@@ -61,11 +73,12 @@ export default function LoginForm() {
         });
         router.push('/dashboard');
       } else {
+        setError(data);
         throw new Error(data.error || 'Falha na autenticação');
       }
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
-      setError(errorMessage);
+      setError(error);
       toast({
         title: "Erro de autenticação",
         description: `Falha no login: ${errorMessage}`,
@@ -112,11 +125,6 @@ export default function LoginForm() {
                 </div>
               </>
             )}
-            {error && (
-              <div className="text-sm text-red-500 bg-red-50 p-2 rounded">
-                Erro: {error}
-              </div>
-            )}
           </CardContent>
           <CardFooter>
             {!isTv && (
@@ -128,20 +136,26 @@ export default function LoginForm() {
         </form>
       </Card>
       
-      {/* Debug information for TV */}
-      {isTv && (
-        <Card className="mt-4 bg-gray-100">
-          <CardContent className="p-4">
-            <h3 className="font-semibold mb-2">Informações de Debug</h3>
-            <div className="space-y-1 text-sm">
-              <p>Status: {isLoading ? 'Tentando login...' : error ? 'Erro' : 'Aguardando'}</p>
-              {error && <p className="text-red-500">Erro: {error}</p>}
-              <p>Modo TV: {isTv ? 'Sim' : 'Não'}</p>
-              <p>User Agent: {typeof window !== 'undefined' ? window.navigator.userAgent : 'Não disponível'}</p>
-            </div>
-          </CardContent>
-        </Card>
-      )}
+      {/* Debug information */}
+      <Card className="mt-4">
+        <CardContent className="p-4">
+          <h3 className="font-semibold mb-2">Informações de Debug</h3>
+          <div className="space-y-2 text-sm">
+            <p>Status: {isLoading ? 'Tentando login...' : error ? 'Erro' : 'Aguardando'}</p>
+            <p>Modo TV: {isTv ? 'Sim' : 'Não'}</p>
+            <p>TV Identifier: {tvIdentifier || 'Não disponível'}</p>
+            <p>User Agent: {typeof window !== 'undefined' ? window.navigator.userAgent : 'Não disponível'}</p>
+            {error && (
+              <div className="mt-4 p-3rounded-md">
+                <p className="font-semibold text-red-700">Detalhes do Erro:</p>
+                <pre className="mt-2 whitespace-pre-wrap text-xs text-red-600">
+                  {JSON.stringify(error, null, 2)}
+                </pre>
+              </div>
+            )}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
