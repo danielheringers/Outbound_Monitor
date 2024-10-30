@@ -7,38 +7,33 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/hooks/use-toast"
-import { DebugInfo } from '@/components/DebugInfo'
 
-const TV_STORAGE_KEY = 'tv_identifier';
+// Separate the browser check into a client-side utility
+function isTvBrowser() {
+  if (typeof window === 'undefined') return false;
+  const userAgent = window.navigator.userAgent.toLowerCase();
+  return /smart-tv|smarttv|googletv|appletv|hbbtv|pov_tv|netcast.tv/.test(userAgent);
+}
 
 export default function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [isTvBrowser, setIsTvBrowser] = useState(false)
-  const [tvIdentifier, setTvIdentifier] = useState('')
+  const [isTv, setIsTv] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
+  // Move browser detection to useEffect to avoid SSR issues
   useEffect(() => {
-    const checkTvBrowser = () => {
-      const userAgent = navigator.userAgent.toLowerCase();
-      return /smart-tv|smarttv|googletv|appletv|hbbtv|pov_tv|netcast.tv/.test(userAgent);
-    };
+    setIsTv(isTvBrowser());
+  }, []);
 
-    const isTv = checkTvBrowser();
-    setIsTvBrowser(isTv);
-
+  // Separate useEffect for auto-login to avoid dependency issues
+  useEffect(() => {
     if (isTv) {
-      let identifier = localStorage.getItem(TV_STORAGE_KEY);
-      if (!identifier) {
-        identifier = 'TV_' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem(TV_STORAGE_KEY, identifier);
-      }
-      setTvIdentifier(identifier);
       handleSubmit();
     }
-  }, []);
+  }, [isTv]); // Only trigger when isTv changes
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -54,8 +49,7 @@ export default function LoginForm() {
         body: JSON.stringify({
           username: email,
           password: password,
-          isTvBrowser: isTvBrowser,
-          tvIdentifier: tvIdentifier,
+          isTvBrowser: isTv,
         }),
       });
 
@@ -87,40 +81,67 @@ export default function LoginForm() {
       <Card>
         <CardHeader>
           <CardTitle>Login</CardTitle>
-          <CardDescription>Entre com suas credenciais para acessar o dashboard.</CardDescription>
+          <CardDescription>
+            {isTv ? 'Login automático para TV' : 'Entre com suas credenciais para acessar o dashboard.'}
+          </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input 
-                id="email" 
-                type="email" 
-                placeholder="seu@email.com" 
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required 
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
-              <Input 
-                id="password" 
-                type="password" 
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required 
-              />
-            </div>
+            {!isTv && (
+              <>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email</Label>
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    placeholder="seu@email.com" 
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required 
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Senha</Label>
+                  <Input 
+                    id="password" 
+                    type="password" 
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required 
+                  />
+                </div>
+              </>
+            )}
+            {error && (
+              <div className="text-sm text-red-500 bg-red-50 p-2 rounded">
+                Erro: {error}
+              </div>
+            )}
           </CardContent>
           <CardFooter>
-            <Button type="submit" className="w-full" disabled={isLoading}>
-              {isLoading ? "Entrando..." : "Entrar"}
-            </Button>
+            {!isTv && (
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? "Entrando..." : "Entrar"}
+              </Button>
+            )}
           </CardFooter>
         </form>
       </Card>
-      <DebugInfo error={error} tvIdentifier={tvIdentifier} isTvBrowser={isTvBrowser} />
+      
+      {/* Debug information for TV */}
+      {isTv && (
+        <Card className="mt-4 bg-gray-100">
+          <CardContent className="p-4">
+            <h3 className="font-semibold mb-2">Informações de Debug</h3>
+            <div className="space-y-1 text-sm">
+              <p>Status: {isLoading ? 'Tentando login...' : error ? 'Erro' : 'Aguardando'}</p>
+              {error && <p className="text-red-500">Erro: {error}</p>}
+              <p>Modo TV: {isTv ? 'Sim' : 'Não'}</p>
+              <p>User Agent: {typeof window !== 'undefined' ? window.navigator.userAgent : 'Não disponível'}</p>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
