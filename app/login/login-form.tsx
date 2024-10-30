@@ -149,7 +149,7 @@ export default function LoginForm() {
               <div className="mt-4 p-3rounded-md">
                 <p className="font-semibold text-red-700">Detalhes do Erro:</p>
                 <pre className="mt-2 whitespace-pre-wrap text-xs text-red-600">
-                  {JSON.stringify(error, null, 2)}
+                  {JSON.stringify(error)}
                 </pre>
               </div>
             )}
