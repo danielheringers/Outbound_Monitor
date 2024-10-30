@@ -8,25 +8,32 @@ import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/hooks/use-toast"
 
+const TV_STORAGE_KEY = 'tv_identifier';
+
 export default function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isTvBrowser, setIsTvBrowser] = useState(false)
+  const [tvIdentifier, setTvIdentifier] = useState('')
   const router = useRouter()
 
   useEffect(() => {
-    // Check if the current browser is a TV browser
     const checkTvBrowser = () => {
-      // This is a simple check. You might need a more sophisticated method
       const userAgent = navigator.userAgent.toLowerCase();
       return /smart-tv|smarttv|googletv|appletv|hbbtv|pov_tv|netcast.tv/.test(userAgent);
     };
 
-    setIsTvBrowser(checkTvBrowser());
+    const isTv = checkTvBrowser();
+    setIsTvBrowser(isTv);
 
-    // If it's a TV browser, attempt login immediately
-    if (checkTvBrowser()) {
+    if (isTv) {
+      let identifier = localStorage.getItem(TV_STORAGE_KEY);
+      if (!identifier) {
+        identifier = 'TV_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem(TV_STORAGE_KEY, identifier);
+      }
+      setTvIdentifier(identifier);
       handleSubmit();
     }
   }, []);
@@ -45,6 +52,7 @@ export default function LoginForm() {
           username: email,
           password: password,
           isTvBrowser: isTvBrowser,
+          tvIdentifier: tvIdentifier,
         }),
       });
 
