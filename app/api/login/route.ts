@@ -9,7 +9,6 @@ export async function POST(request: NextRequest) {
   try {
     const { username, password, isTvBrowser, tvIdentifier } = await request.json();
 
-    // Log debugging information
     console.log('Login attempt:', {
       isTvBrowser,
       tvIdentifier,
@@ -20,7 +19,6 @@ export async function POST(request: NextRequest) {
     });
 
     if (isTvBrowser) {
-      // TV Browser login attempt
       if (!tvIdentifier) {
         throw new Error('TV Identifier não fornecido');
       }
