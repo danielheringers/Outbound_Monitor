@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
 import { toast } from "@/hooks/use-toast"
+import { DebugInfo } from '@/components/DebugInfo'
 
 const TV_STORAGE_KEY = 'tv_identifier';
 
@@ -16,6 +17,7 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [isTvBrowser, setIsTvBrowser] = useState(false)
   const [tvIdentifier, setTvIdentifier] = useState('')
+  const [error, setError] = useState<string | null>(null)
   const router = useRouter()
 
   useEffect(() => {
@@ -41,6 +43,7 @@ export default function LoginForm() {
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     setIsLoading(true);
+    setError(null);
 
     try {
       const response = await fetch('/api/login', {
@@ -67,9 +70,11 @@ export default function LoginForm() {
         throw new Error(data.error || 'Falha na autenticação');
       }
     } catch (error) {
+      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      setError(errorMessage);
       toast({
         title: "Erro de autenticação",
-        description: `Falha no login: ${error}`,
+        description: `Falha no login: ${errorMessage}`,
         variant: "destructive",
       });
     } finally {
@@ -77,52 +82,45 @@ export default function LoginForm() {
     }
   };
 
-  if (isTvBrowser) {
-    return (
-      <Card className="w-full max-w-md">
-        <CardContent className="pt-6">
-          <p className="text-center">Realizando login automático...</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
   return (
-    <Card className="w-full max-w-md">
-      <CardHeader>
-        <CardTitle>Login</CardTitle>
-        <CardDescription>Entre com suas credenciais para acessar o dashboard.</CardDescription>
-      </CardHeader>
-      <form onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
-            <Input 
-              id="email" 
-              type="email" 
-              placeholder="seu@email.com" 
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required 
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="password">Senha</Label>
-            <Input 
-              id="password" 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required 
-            />
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button type="submit" className="w-full" disabled={isLoading}>
-            {isLoading ? "Entrando..." : "Entrar"}
-          </Button>
-        </CardFooter>
-      </form>
-    </Card>
+    <div className="w-full max-w-md">
+      <Card>
+        <CardHeader>
+          <CardTitle>Login</CardTitle>
+          <CardDescription>Entre com suas credenciais para acessar o dashboard.</CardDescription>
+        </CardHeader>
+        <form onSubmit={handleSubmit}>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input 
+                id="email" 
+                type="email" 
+                placeholder="seu@email.com" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required 
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
+              <Input 
+                id="password" 
+                type="password" 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required 
+              />
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button type="submit" className="w-full" disabled={isLoading}>
+              {isLoading ? "Entrando..." : "Entrar"}
+            </Button>
+          </CardFooter>
+        </form>
+      </Card>
+      <DebugInfo error={error} tvIdentifier={tvIdentifier} isTvBrowser={isTvBrowser} />
+    </div>
   )
 }
