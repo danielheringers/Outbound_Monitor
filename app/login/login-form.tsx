@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,11 +12,28 @@ export default function LoginForm() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  const [isTvBrowser, setIsTvBrowser] = useState(false)
   const router = useRouter()
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setIsLoading(true)
+  useEffect(() => {
+    // Check if the current browser is a TV browser
+    const checkTvBrowser = () => {
+      // This is a simple check. You might need a more sophisticated method
+      const userAgent = navigator.userAgent.toLowerCase();
+      return /smart-tv|smarttv|googletv|appletv|hbbtv|pov_tv|netcast.tv/.test(userAgent);
+    };
+
+    setIsTvBrowser(checkTvBrowser());
+
+    // If it's a TV browser, attempt login immediately
+    if (checkTvBrowser()) {
+      handleSubmit();
+    }
+  }, []);
+
+  const handleSubmit = async (e?: React.FormEvent) => {
+    if (e) e.preventDefault();
+    setIsLoading(true);
 
     try {
       const response = await fetch('/api/login', {
@@ -27,31 +44,39 @@ export default function LoginForm() {
         body: JSON.stringify({
           username: email,
           password: password,
+          isTvBrowser: isTvBrowser,
         }),
-      })
+      });
 
-      const data = await response.json()
-      console.log("Data: ", data)
+      const data = await response.json();
       if (data.success) {
         toast({
           title: "Login bem-sucedido",
           description: "Redirecionando para a página principal...",
-        })
-        console.log("Chegou Aqui!")
-        router.push('/dashboard')
-        console.log("Passou!")
+        });
+        router.push('/dashboard');
       } else {
-        throw new Error(data.error || 'Falha na autenticação')
+        throw new Error(data.error || 'Falha na autenticação');
       }
     } catch (error) {
       toast({
         title: "Erro de autenticação",
-        description: `Email ou senha inválidos: ${error}`,
+        description: `Falha no login: ${error}`,
         variant: "destructive",
-      })
+      });
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
+  };
+
+  if (isTvBrowser) {
+    return (
+      <Card className="w-full max-w-md">
+        <CardContent className="pt-6">
+          <p className="text-center">Realizando login automático...</p>
+        </CardContent>
+      </Card>
+    );
   }
 
   return (
