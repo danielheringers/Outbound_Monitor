@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { login } from '@/services/authService';
 
 const AUTO_LOGIN_USERNAME = process.env.AUTO_LOGIN_USERNAME || '';
-const AUTO_LOGIN_PASSWORD = 'Aldh20181991!'
+const AUTO_LOGIN_PASSWORD = process.env.AUTO_LOGIN_PASSWORD || '';
 const TV_IDENTIFIER = 'TV_ppwsy6v6r';
 
 export async function POST(request: NextRequest) {
