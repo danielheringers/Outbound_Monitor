@@ -24,6 +24,6 @@ export async function POST(request: NextRequest) {
     }
   } catch (error) {
     console.error('Erro no login:', error);
-    return NextResponse.json({ error: 'Falha na autenticação' }, { status: 401 });
+    return NextResponse.json({ error: error }, { status: 401 });
   }
 }
