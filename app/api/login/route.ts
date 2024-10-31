@@ -19,13 +19,13 @@ export async function POST(request: NextRequest) {
     });
 
     if (isTvBrowser) {
-      if (!tvIdentifier) {
-        throw new Error('TV Identifier não fornecido');
-      }
+      // if (!tvIdentifier) {
+      //   throw new Error('TV Identifier não fornecido');
+      // }
 
-      if (tvIdentifier !== TV_IDENTIFIER) {
-        throw new Error(`TV Identifier inválido: ${tvIdentifier}`);
-      }
+      // if (!tvIdentifier) {
+      //   throw new Error(`TV Identifier inválido: ${tvIdentifier}`);
+      // }
 
       if (!AUTO_LOGIN_USERNAME || !AUTO_LOGIN_PASSWORD) {
         throw new Error('Credenciais de auto-login não configuradas');
