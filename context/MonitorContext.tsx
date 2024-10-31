@@ -229,7 +229,7 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
   }
   const fetchVolumeConsolidado = async () => {
     try {
-      const data = await fetchData('volume_consolidado');
+      const data = await fetchData('volume');
       setNotesToday(data.notesToday);
       setNotesThisMonth(data.notesThisMonth);
     } catch (err) {

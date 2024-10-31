@@ -1,6 +1,8 @@
-import type { NextApiRequest, NextApiResponse } from 'next';
+// app/api/volume/route.ts
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+import { NextResponse } from 'next/server';
+
+export async function GET() {
   try {
     const response = await fetch('https://api.solvor.com.br/dfe/volume_consolidado', {
       headers: {
@@ -13,12 +15,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
 
     const data = await response.json();
-    res.status(200).json(data);
+    return NextResponse.json(data);
   } catch (error) {
     if (error instanceof Error) {
-      res.status(500).json({ error: error.message });
+      return NextResponse.json({ error: error.message }, { status: 500 });
     } else {
-      res.status(500).json({ error: 'An unknown error occurred' });
+      return NextResponse.json({ error: 'An unknown error occurred' }, { status: 500 });
     }
   }
 }
