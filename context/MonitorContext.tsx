@@ -57,6 +57,8 @@ type MonitorContextType = {
   nfseData: NFSeData[]
   generalStatuses: StatusData[]
   stateStatuses: StatusData[]
+  notesToday: number;
+  notesThisMonth: number;
   queueData: {
     nfeEmit: QueueData | null
     nfseEmit: QueueData | null
@@ -112,6 +114,8 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [nfseData, setNfseData] = useState<NFSeData[]>([])
   const [generalStatuses, setGeneralStatuses] = useState<StatusData[]>([])
   const [stateStatuses, setStateStatuses] = useState<StatusData[]>([])
+  const [notesToday, setNotesToday] = useState(0);
+  const [notesThisMonth, setNotesThisMonth] = useState(0);
   const [queueData, setQueueData] = useState<MonitorContextType['queueData']>({
     nfeEmit: null,
     nfseEmit: null,
@@ -223,13 +227,24 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setGeneralStatuses(general)
     setStateStatuses(states)
   }
-
+  const fetchVolumeConsolidado = async () => {
+    try {
+      const data = await fetchData('volume_consolidado');
+      setNotesToday(data.notesToday);
+      setNotesThisMonth(data.notesThisMonth);
+    } catch (err) {
+      console.error('Error fetching volume consolidado data:', err);
+      setNotesToday(0);
+      setNotesThisMonth(0);
+    }
+  };
   const updateAllData = async () => {
     setIsLoading(true)
     await Promise.all([
       fetchMetricsData(),
       fetchStatusData(),
-      fetchQueueData()
+      fetchQueueData(),
+      fetchVolumeConsolidado(),
     ])
     setIsLoading(false)
   }
@@ -248,6 +263,8 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
       stateStatuses,
       queueData,
       updateAllData,
+      notesToday,
+      notesThisMonth,
       isLoading
     }}>
       {children}

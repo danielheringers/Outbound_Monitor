@@ -14,7 +14,7 @@ import { formatNumber } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 export function NFSeChart() {
-  const { nfseData, queueData } = useMonitor();
+  const { nfseData, queueData, notesToday, notesThisMonth } = useMonitor();
   const [queueCount, setQueueCount] = useState(0);
 
   const chartConfig = {
@@ -26,9 +26,6 @@ export function NFSeChart() {
       },
     },
   };
-
-  const notesToday = nfseData.reduce((sum, item) => sum + item.count, 0);
-  const notesThisMonth = notesToday;
 
   useEffect(() => {
     const nfseEmit = queueData.nfseEmit?.totalMessagesReady || 0;
