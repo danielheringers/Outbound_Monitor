@@ -53,24 +53,30 @@ type QueueData = {
 }
 
 type MonitorContextType = {
-  nfeData: NFeData[]
-  nfseData: NFSeData[]
-  generalStatuses: StatusData[]
-  stateStatuses: StatusData[]
-  notesToday: number;
-  notesThisMonth: number;
+  nfeData: NFeData[];
+  nfseData: NFSeData[];
+  generalStatuses: StatusData[];
+  stateStatuses: StatusData[];
+  notesToday: {
+    nfe: number;
+    nfse: number;
+  };
+  notesThisMonth: {
+    nfe: number;
+    nfse: number;
+  };
   queueData: {
-    nfeEmit: QueueData | null
-    nfseEmit: QueueData | null
-    nfseCancel: QueueData | null
-    nfseQueryNfse: QueueData | null
-    nfseQueryRpsProtocol: QueueData | null
-    cteosEmit: QueueData | null
-    RPS: QueueData | null
-  }
-  updateAllData: () => Promise<void>
-  isLoading: boolean
-}
+    nfeEmit: QueueData | null;
+    nfseEmit: QueueData | null;
+    nfseCancel: QueueData | null;
+    nfseQueryNfse: QueueData | null;
+    nfseQueryRpsProtocol: QueueData | null;
+    cteosEmit: QueueData | null;
+    RPS: QueueData | null;
+  };
+  updateAllData: () => Promise<void>;
+  isLoading: boolean;
+};
 
 const MonitorContext = createContext<MonitorContextType | undefined>(undefined)
 
@@ -114,8 +120,8 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const [nfseData, setNfseData] = useState<NFSeData[]>([])
   const [generalStatuses, setGeneralStatuses] = useState<StatusData[]>([])
   const [stateStatuses, setStateStatuses] = useState<StatusData[]>([])
-  const [notesToday, setNotesToday] = useState(0);
-  const [notesThisMonth, setNotesThisMonth] = useState(0);
+  const [notesToday, setNotesToday] = useState({ nfe: 0, nfse: 0 });
+  const [notesThisMonth, setNotesThisMonth] = useState({ nfe: 0, nfse: 0 });
   const [queueData, setQueueData] = useState<MonitorContextType['queueData']>({
     nfeEmit: null,
     nfseEmit: null,
@@ -168,9 +174,20 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const fetchQueueData = async () => {
     try {
-      const data: QueueData[] = await fetchData('queues')
-      const rpsQueues = data.filter(queue => queue.name.startsWith('rps-'))
-      const rpsTotal = rpsQueues.reduce((sum, queue) => sum + queue.totalMessagesReady, 0)
+      const response = await fetch('/api/queues', {
+        headers: {
+          'Cache-Control': 'no-store',
+        },
+      });
+  
+      if (!response.ok) {
+        throw new Error('Failed to fetch queue data');
+      }
+  
+      const data: QueueData[] = await response.json();
+      const rpsQueues = data.filter(queue => queue.name.startsWith('rps-'));
+      const rpsTotal = rpsQueues.reduce((sum, queue) => sum + queue.totalMessagesReady, 0);
+  
       setQueueData({
         nfeEmit: data.find(queue => queue.name === 'nfe-emit') || null,
         nfseEmit: data.find(queue => queue.name === 'nfse-emit') || null,
@@ -181,11 +198,11 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
         RPS: {
           name: 'RPS',
           label: 'RPS',
-          totalMessagesReady: rpsTotal
+          totalMessagesReady: rpsTotal,
         },
-      })
+      });
     } catch (error) {
-      console.error("Error fetching queue data:", error)
+      console.error('Error fetching queue data:', error);
       setQueueData({
         nfeEmit: null,
         nfseEmit: null,
@@ -194,9 +211,9 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
         nfseQueryNfse: null,
         nfseQueryRpsProtocol: null,
         RPS: null,
-      })
+      });
     }
-  }
+  };
 
   const processData = (data: ApiResponse[]) => {
     if (!Array.isArray(data)) {
@@ -230,12 +247,24 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
   const fetchVolumeConsolidado = async () => {
     try {
       const data = await fetchData('volume');
-      setNotesToday(data.notesToday);
-      setNotesThisMonth(data.notesThisMonth);
+      setNotesToday({
+        nfe: data.nfe_dia,
+        nfse: data.nfse_dia,
+      });
+      setNotesThisMonth({
+        nfe: data.nfe_mes,
+        nfse: data.nfse_mes,
+      });
     } catch (err) {
       console.error('Error fetching volume consolidado data:', err);
-      setNotesToday(0);
-      setNotesThisMonth(0);
+      setNotesToday({
+        nfe: 0,
+        nfse: 0,
+      });
+      setNotesThisMonth({
+        nfe: 0,
+        nfse: 0,
+      });
     }
   };
   const updateAllData = async () => {
@@ -265,7 +294,7 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
       updateAllData,
       notesToday,
       notesThisMonth,
-      isLoading
+      isLoading,
     }}>
       {children}
     </MonitorContext.Provider>

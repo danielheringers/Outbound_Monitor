@@ -1,42 +1,11 @@
 import { NextResponse } from 'next/server';
 import type { RabbitMQQueue } from '@/app/types';
-import { queueConfigs, QueueConfig } from '@/app/config/queueConfig';
 
-interface GroupedQueue {
+// Define the expected queue data structure that matches the context
+interface QueueData {
   name: string;
   label: string;
   totalMessagesReady: number;
-  queues: {
-    name: string;
-    messages_ready: number;
-  }[];
-}
-
-function groupQueues(queues: RabbitMQQueue[]): GroupedQueue[] {
-  const groupedQueues: { [key: string]: GroupedQueue } = {};
-
-  queues.forEach((queue) => {
-    const [documentType, , queueType] = queue.name.split('-');
-    const key = `${documentType}-${queueType}`;
-    const config: QueueConfig = queueConfigs[key] || { label: key };
-
-    if (!groupedQueues[key]) {
-      groupedQueues[key] = {
-        name: key,
-        label: config.label,
-        totalMessagesReady: 0,
-        queues: [],
-      };
-    }
-
-    groupedQueues[key].totalMessagesReady += queue.messages_ready;
-    groupedQueues[key].queues.push({
-      name: queue.name,
-      messages_ready: queue.messages_ready,
-    });
-  });
-
-  return Object.values(groupedQueues);
 }
 
 export async function GET() {
@@ -55,16 +24,47 @@ export async function GET() {
       headers: {
         'Authorization': authHeader,
       },
+      cache: 'no-store'
     });
 
     if (!response.ok) {
       throw new Error('Failed to fetch queues');
     }
 
-    const data: RabbitMQQueue[] = await response.json();
-    const groupedData = groupQueues(data);
+    const rawData: RabbitMQQueue[] = await response.json();
+    
+    // Transform the data to match the expected structure
+    const transformedData = rawData.reduce((acc: { [key: string]: QueueData }, queue) => {
+      // Extract the document type and queue type
+      const [documentType, , queueType] = queue.name.split('-');
+      if (!documentType || !queueType) return acc;
 
-    return NextResponse.json(groupedData);
+      const key = `${documentType}-${queueType}`;
+      
+      if (!acc[key]) {
+        acc[key] = {
+          name: key,
+          label: `${documentType.toUpperCase()} ${queueType}`,
+          totalMessagesReady: 0
+        };
+      }
+      
+      acc[key].totalMessagesReady += queue.messages_ready;
+      return acc;
+    }, {});
+
+    // Convert to array and add special handling for RPS queues
+    const queueData = Object.values(transformedData);
+    const rpsQueues = rawData.filter(queue => queue.name.startsWith('rps-'));
+    if (rpsQueues.length > 0) {
+      queueData.push({
+        name: 'RPS',
+        label: 'RPS',
+        totalMessagesReady: rpsQueues.reduce((sum, queue) => sum + queue.messages_ready, 0)
+      });
+    }
+
+    return NextResponse.json(queueData);
   } catch (error) {
     console.error('Error fetching queues:', error);
     return NextResponse.json({ error: 'Failed to fetch queues' }, { status: 500 });

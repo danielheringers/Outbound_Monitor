@@ -51,7 +51,7 @@ export function NFeChart() {
               <div className="text-sm sm:text-md text-muted-foreground w-full">Hoje</div>
               <Separator orientation="vertical" className="mx-2" />
               <div className="text-lg sm:text-md md:text-lg font-bold pl-2 sm:pl-4 pr-2">
-                {formatNumber(notesToday)}
+                {formatNumber(notesToday.nfe)}
               </div>
             </CardContent>
           </Card>
@@ -60,7 +60,7 @@ export function NFeChart() {
               <div className="text-sm sm:text-md text-muted-foreground w-full">Mês</div>
               <Separator orientation="vertical" className="mx-2" />
               <div className="text-lg sm:text-md md:text-lg font-bold pl-2 sm:pl-4 pr-2">
-                {formatNumber(notesThisMonth)}
+                {formatNumber(notesThisMonth.nfe)}
               </div>
             </CardContent>
           </Card>

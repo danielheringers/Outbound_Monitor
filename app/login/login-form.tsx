@@ -26,9 +26,16 @@ export default function LoginForm() {
   const [isLoading, setIsLoading] = useState(false)
   const [isTv, setIsTv] = useState(false)
   const [tvIdentifier, setTvIdentifier] = useState<string | null>(null)
+  const [userAgent, setUserAgent] = useState('Não disponível');
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [error, setError] = useState<any>(null)
   const router = useRouter()
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setUserAgent(window.navigator.userAgent);
+    }
+  }, []);
 
   useEffect(() => {
     const tv = isTvBrowser();
@@ -144,9 +151,9 @@ export default function LoginForm() {
             <p>Status: {isLoading ? 'Tentando login...' : error ? 'Erro' : 'Aguardando'}</p>
             <p>Modo TV: {isTv ? 'Sim' : 'Não'}</p>
             <p>TV Identifier: {tvIdentifier || 'Não disponível'}</p>
-            <p>User Agent: {typeof window !== 'undefined' ? window.navigator.userAgent : 'Não disponível'}</p>
+            <p>User Agent: {userAgent}</p>
             {error && (
-              <div className="mt-4 p-3rounded-md">
+              <div className="mt-4 p-3 rounded-md">
                 <p className="font-semibold text-red-700">Detalhes do Erro:</p>
                 <pre className="mt-2 whitespace-pre-wrap text-xs text-red-600">
                   {JSON.stringify(error)}
