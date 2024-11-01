@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
 
 export interface NFeData {
   label: "Emissões";
@@ -133,13 +133,15 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
   })
   const [isLoading, setIsLoading] = useState(false)
 
-  const fetchData = async (endpoint: string) => {
-    const response = await fetch(`/api/${endpoint}`)
+  const fetchData = useCallback(async (endpoint: string) => {
+    const response = await fetch(`/api/${endpoint}`, {
+      cache: 'no-store'
+    })
     if (!response.ok) {
       throw new Error(`Falha ao buscar dados de ${endpoint}`)
     }
     return response.json()
-  }
+  }, [])
 
   const fetchMetricsData = async () => {
     try {
@@ -244,7 +246,7 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
     setGeneralStatuses(general)
     setStateStatuses(states)
   }
-  const fetchVolumeConsolidado = async () => {
+  const fetchVolumeConsolidado = useCallback(async () => {
     try {
       const data = await fetchData('volume');
       setNotesToday({
@@ -266,8 +268,9 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
         nfse: 0,
       });
     }
-  };
-  const updateAllData = async () => {
+  }, [fetchData]);
+
+  const updateAllData = useCallback(async () => {
     setIsLoading(true)
     await Promise.all([
       fetchMetricsData(),
@@ -276,13 +279,25 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
       fetchVolumeConsolidado(),
     ])
     setIsLoading(false)
-  }
+  }, [fetchMetricsData, fetchStatusData, fetchQueueData, fetchVolumeConsolidado])
 
   useEffect(() => {
     updateAllData()
     const intervalId = setInterval(updateAllData, 5 * 60 * 1000)
     return () => clearInterval(intervalId)
-  }, [])
+  }, [updateAllData])
+
+  // Novo efeito para verificar se o contador zerou
+  useEffect(() => {
+    const checkCounterReset = () => {
+      const now = new Date()
+      if (now.getHours() === 0 && now.getMinutes() === 0) {
+        updateAllData()
+      }
+    }
+    const intervalId = setInterval(checkCounterReset, 60000) // Verifica a cada minuto
+    return () => clearInterval(intervalId)
+  }, [updateAllData])
 
   return (
     <MonitorContext.Provider value={{

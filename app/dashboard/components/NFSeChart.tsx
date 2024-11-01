@@ -14,8 +14,8 @@ import { formatNumber } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 export function NFSeChart() {
-  const { nfseData, queueData, notesToday, notesThisMonth } = useMonitor();
-  const [queueCount, setQueueCount] = useState(0);
+  const { nfseData, queueData, notesToday, notesThisMonth, updateAllData } = useMonitor()
+  const [queueCount, setQueueCount] = useState(0)
 
   const chartConfig = {
     count: {
@@ -26,6 +26,13 @@ export function NFSeChart() {
       },
     },
   };
+
+  useEffect(() => {
+    const intervalId = setInterval(() => {
+      updateAllData()
+    }, 300000)
+    return () => clearInterval(intervalId)
+  }, [updateAllData])
 
   useEffect(() => {
     const nfseEmit = queueData.nfseEmit?.totalMessagesReady || 0;
