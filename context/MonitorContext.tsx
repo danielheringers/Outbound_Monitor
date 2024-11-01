@@ -143,7 +143,7 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return response.json()
   }, [])
 
-  const fetchMetricsData = async () => {
+  const fetchMetricsData = useCallback(async () => {
     try {
       const data: Metrics = await fetchData('metrics')
       const formattedNFeData = data.nfe.map((item: NFeData) => ({
@@ -161,20 +161,10 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
       setNfeData([])
       setNfseData([])
     }
-  }
+  }, [fetchData]);
+  
 
-  const fetchStatusData = async () => {
-    try {
-      const data: ApiResponse[] = await fetchData('status')
-      processData(data)
-    } catch (error) {
-      console.error("Error fetching status data:", error)
-      setGeneralStatuses([])
-      setStateStatuses([])
-    }
-  }
-
-  const fetchQueueData = async () => {
+  const fetchQueueData = useCallback(async () => {
     try {
       const response = await fetch('/api/queues', {
         headers: {
@@ -215,9 +205,9 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
         RPS: null,
       });
     }
-  };
+  }, []);
 
-  const processData = (data: ApiResponse[]) => {
+  const processData = useCallback((data: ApiResponse[]) => {
     if (!Array.isArray(data)) {
       console.error("Status data is not an array")
       setGeneralStatuses([])
@@ -245,7 +235,20 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
     setGeneralStatuses(general)
     setStateStatuses(states)
-  }
+  }, [])
+
+  const fetchStatusData = useCallback(async () => {
+    try {
+      const data: ApiResponse[] = await fetchData('status')
+      processData(data)
+    } catch (err) {
+      console.error('Error fetching status data:', err)
+      setGeneralStatuses([])
+      setStateStatuses([])
+    }
+  }, [fetchData])
+
+
   const fetchVolumeConsolidado = useCallback(async () => {
     try {
       const data = await fetchData('volume');
@@ -287,6 +290,7 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return () => clearInterval(intervalId)
   }, [updateAllData])
 
+  // Novo efeito para verificar se o contador zerou
   useEffect(() => {
     const checkCounterReset = () => {
       const now = new Date()
@@ -294,7 +298,7 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updateAllData()
       }
     }
-    const intervalId = setInterval(checkCounterReset, 300000)
+    const intervalId = setInterval(checkCounterReset, 60000) // Verifica a cada minuto
     return () => clearInterval(intervalId)
   }, [updateAllData])
 
