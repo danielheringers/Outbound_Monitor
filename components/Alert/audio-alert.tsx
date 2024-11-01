@@ -30,7 +30,7 @@ export function AudioAlert() {
     if (!audioContext || !isEnabled || !nfeData || !nfseData) return
 
     const shouldAlert = nfeData[nfeData.length - 1]?.meanResponseTime > 500 ||
-                        nfeData[nfeData.length - 1]?.count <= 50 ||
+                        nfeData[nfeData.length - 1]?.count <= 0 ||
                         nfseData[nfseData.length - 1]?.count === 0
 
     if (shouldAlert) {
