@@ -290,7 +290,6 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
     return () => clearInterval(intervalId)
   }, [updateAllData])
 
-  // Novo efeito para verificar se o contador zerou
   useEffect(() => {
     const checkCounterReset = () => {
       const now = new Date()

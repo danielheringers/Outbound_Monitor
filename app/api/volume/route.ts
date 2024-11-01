@@ -8,6 +8,7 @@ export async function GET() {
       headers: {
         Authorization: '763b65c9-108f-4ff6-a79f-2204f608f1fc',
       },
+      cache: 'no-store'
     });
 
     if (!response.ok) {
