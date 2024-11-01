@@ -12,51 +12,58 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { ChartConfig, ChartContainer } from "@/components/ui/chart";
+import { useMonitor } from "@/context/MonitorContext";
 
 const categorizeResponseTime = (meanTimeInSeconds: number): string => {
-  if (meanTimeInSeconds < 0.25) {
-    return '0.25';
-  } else if (meanTimeInSeconds < 0.5) {
-    return '0.50';
-  } else if (meanTimeInSeconds < 0.8) {
-    return '0.80';
+  if (meanTimeInSeconds < 100) {
+    return "0.00";
+  } else if (meanTimeInSeconds < 250) {
+    return "0.25";
+  } else if (meanTimeInSeconds < 500) {
+    return "0.50";
+  } else if (meanTimeInSeconds < 750) {
+    return "0.75";
   } else {
-    return '1.00';
+    return "1.00";
   }
 };
 
-const generateChartData = () => {
-  const data = [];
-  const now = new Date();
-  for (let i = 0; i < 32; i++) {
-    const time = new Date(now.getTime() - (31 - i) * 15 * 60000);
-    const rawResponseTime = Math.random() * (0.49 - 0.20) + 0.20;
-    data.push({
-      time: time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      responseTime: parseFloat(categorizeResponseTime(rawResponseTime)),
-    });
-  }
-  return data;
-};
+interface NfeDataItem {
+  period: string;
+  meanResponseTime: number;
+}
 
+interface ChartDataItem {
+  time: string;
+  responseTime: number;
+}
+
+const generateChartData = (nfeData: NfeDataItem[]): ChartDataItem[] => {
+  return nfeData.map((item) => ({
+    time: item.period,
+    responseTime: parseFloat(categorizeResponseTime(item.meanResponseTime)),
+  }));
+};
 
 const responseCategories = [
-  { value: 1.00, label: "Lento", color: "#FF4136" },
+  { value: 1.0, label: "Lento", color: "#FF4136" },
   { value: 0.75, label: "Aceitável", color: "#FF851B" },
-  { value: 0.50, label: "Bom", color: "#0074D9" },
+  { value: 0.5, label: "Bom", color: "#0074D9" },
   { value: 0.25, label: "Excelente", color: "#2ECC40" },
-  { value: 0.00, label: "Dream", color: "#802ecc" },
+  { value: 0.0, label: "Dream", color: "#802ecc" },
 ];
 
 export function ResponseTimeChart() {
-  const [chartData, setChartData] = useState(() => generateChartData());
+  const { nfeData } = useMonitor();
+  const [chartData, setChartData] = useState(() =>
+    nfeData ? generateChartData(nfeData) : []
+  );
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setChartData(generateChartData());
-    }, 300000);
-    return () => clearInterval(interval);
-  }, []);
+    if (nfeData) {
+      setChartData(generateChartData(nfeData));
+    }
+  }, [nfeData]);
 
   const chartConfig: ChartConfig = useMemo(
     () => ({
@@ -73,15 +80,27 @@ export function ResponseTimeChart() {
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const CustomYAxisTick = ({ x, y, payload }: any) => {
-    const category = responseCategories.find(cat => cat.value === payload.value);
+    if (!payload) return null;
+    const category = responseCategories.find(
+      (cat) => cat.value === payload.value
+    );
     return (
-      <g transform={`translate(${x},${y})`}>
-        <text x={-5} y={0} dy={4} textAnchor="end" fill={category?.color} fontSize={12}>
+      <g transform={`translate(${x || 0},${y || 0})`}>
+        <text
+          x={-5}
+          y={0}
+          dy={4}
+          textAnchor="end"
+          fill={category?.color}
+          fontSize={12}
+        >
           {category?.label}
         </text>
       </g>
     );
   };
+  console.log("nfeData:", nfeData);
+  console.log("chartData:", chartData);
 
   return (
     <Card className="w-full mt-4">
@@ -96,15 +115,17 @@ export function ResponseTimeChart() {
               margin={{ top: 5, right: 30, left: 10, bottom: 5 }}
             >
               <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--grid))" />
-              <XAxis
-                dataKey="time"
-                interval={3}
-                tick={{ fontSize: 12 }}
-              />
+              <XAxis dataKey="time" interval={3} tick={{ fontSize: 12 }} />
               <YAxis
-                domain={[0.10, 1]}
-                ticks={[0, 0.25, 0.50, 0.75, 1.00]}
-                tick={<CustomYAxisTick x={undefined} y={undefined} payload={undefined} />}
+                domain={[0.1, 1]}
+                ticks={[0, 0.25, 0.5, 0.75, 1.0]}
+                tick={
+                  <CustomYAxisTick
+                    x={undefined}
+                    y={undefined}
+                    payload={undefined}
+                  />
+                }
                 axisLine={false}
                 tickLine={false}
               />

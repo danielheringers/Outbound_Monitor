@@ -93,6 +93,7 @@ const mapApiStatusToComponentStatus = (apiStatus: string): Status => {
     case "OPERATIONAL":
       return "online"
     case "PARTIALOUTAGE":
+      return "inconsistent"
     case "MINOROUTAGE":
       return "inconsistent"
     case "MAJOROUTAGE":
