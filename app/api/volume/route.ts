@@ -7,6 +7,7 @@ export async function GET() {
     const response = await fetch('https://api.solvor.com.br/dfe/volume_consolidado', {
       headers: {
         Authorization: '763b65c9-108f-4ff6-a79f-2204f608f1fc',
+        'Cache-Control': 'no-store, max-age=0',
       },
       cache: 'no-store'
     });

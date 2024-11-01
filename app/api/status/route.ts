@@ -3,6 +3,9 @@ import { NextResponse } from 'next/server'
 export async function GET() {
   try {
     const response = await fetch('https://monitorsefaz.webmaniabr.com/v2/components.json', {
+      headers: {
+        'Cache-Control': 'no-store, max-age=0',
+      },
       cache: 'no-store'
     })
     if (!response.ok) {
