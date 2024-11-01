@@ -14,7 +14,7 @@ import {
 export function AudioAlert() {
   const { nfeData, nfseData } = useMonitor()
   const [audioContext, setAudioContext] = useState<AudioContext | null>(null)
-  const [isEnabled, setIsEnabled] = useState(false)
+  const [isEnabled, setIsEnabled] = useState(true)
 
   useEffect(() => {
     const context = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
