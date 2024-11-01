@@ -1,3 +1,5 @@
+'use client'
+
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
@@ -7,12 +9,13 @@ import {
   ChevronRightIcon,
   HomeIcon,
   ChatBubbleIcon,
-  BellIcon,
   GearIcon,
   ExitIcon,
   ListBulletIcon,
 } from "@radix-ui/react-icons";
 import { ModeToggle } from "../DarkModeToggle/DarkMode";
+import { AudioAlert } from "../Alert/audio-alert";
+
 export function Sidebar({
   expanded,
   setExpanded,
@@ -65,8 +68,18 @@ export function Sidebar({
         </ul>
 
         <div className="border-t flex flex-col p-3">
+          <div className="flex items-center mb-2">
+            <AudioAlert />
+            {expanded && (
+              <Button
+                variant="ghost"
+                className="flex items-center p-2 rounded-lg hover:bg-primary/10 w-full justify-start ml-2"
+              >
+                <span>Notifications</span>
+              </Button>
+            )}
+          </div>
           {[
-            { icon: BellIcon, label: "Notifications", onClick: () => {} },
             { icon: ChatBubbleIcon, label: "Messages", onClick: () => {} },
             { icon: GearIcon, label: "Settings", onClick: () => {} },
           ].map(({ icon: Icon, label, onClick }) => (
