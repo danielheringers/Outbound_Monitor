@@ -5,10 +5,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
 import { useMonitor } from "@/context/MonitorContext"
-
+interface Incident {
+  end_time: string;
+  duration: number;
+}
 export function Header() {
   const { updateAllData, isLoading } = useMonitor()
-  const [timeOnline, setTimeOnline] = useState(99.98)
+  const [timeOnline, setTimeOnline] = useState(0)
   const [daysSinceLastOutage, setDaysSinceLastOutage] = useState(0)
   const [secondsUntilNextDay, setSecondsUntilNextDay] = useState(0)
   const [nextUpdates, setNextUpdates] = useState([
@@ -16,18 +19,48 @@ export function Header() {
   ])
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setTimeOnline((prev) => Math.min(100, prev + 0.01))
-    }, 60000)
+    async function fetchIncidents() {
+      try {
+        const response = await fetch('/api/downtime');
+        if (!response.ok) {
+          throw new Error('Failed to fetch incidents');
+        }
+        const data = await response.json();
+        calculateTimeOnline(data);
+        calculateDaysSinceLastOutage(data);
+      } catch (err) {
+        console.error('Error fetching incidents:', err);
+      }
+    }
 
-    const updateCounters = async () => {
+    fetchIncidents();
+  }, []);
+
+  const calculateTimeOnline = (incidents: Incident[]) => {
+    const now = new Date();
+    const startOfYear = new Date(now.getFullYear(), 0, 1);
+    const totalHours = (now.getTime() - startOfYear.getTime()) / (1000 * 60 * 60);
+    
+    const downtimeHours = incidents.reduce((total, incident) => {
+      return total + (incident.duration / 60);
+    }, 0);
+
+    const onlinePercentage = ((totalHours - downtimeHours) / totalHours) * 100;
+    setTimeOnline(onlinePercentage);
+  };
+
+  const calculateDaysSinceLastOutage = (incidents: Incident[]): void => {
+    if (incidents.length === 0) return;
+
+    const lastOutage = new Date(Math.max(...incidents.map(i => new Date(i.end_time).getTime())));
+    const now = new Date();
+    const daysSince = Math.floor((now.getTime() - lastOutage.getTime()) / (1000 * 60 * 60 * 24));
+    setDaysSinceLastOutage(daysSince);
+  };
+
+  useEffect(() => {
+    const updateCounters = () => {
       const now = new Date()
-      const lastOutage = new Date("2024-03-01")
-      const daysSince = Math.floor(
-        (now.getTime() - lastOutage.getTime()) / (1000 * 3600 * 24)
-      )
-      setDaysSinceLastOutage(daysSince)
-
       const nextNoon = new Date(
         now.getFullYear(),
         now.getMonth(),
@@ -59,7 +92,6 @@ export function Header() {
     const countdownInterval = setInterval(updateCounters, 1000)
 
     return () => {
-      clearInterval(interval)
       clearInterval(countdownInterval)
     }
   }, [updateAllData])
@@ -135,7 +167,7 @@ export function Header() {
                 </div>
               ) : (
                 <Progress
-                value = {((update.initialTime - update.timeLeft) / update.initialTime) * 100}
+                  value={((update.initialTime - update.timeLeft) / update.initialTime) * 100}
                   className="w-[90%] [&>*]:bg-gradient-to-r from-rose-500 to-amber-500 h-2"
                 />
               )}

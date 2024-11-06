@@ -99,8 +99,6 @@ export function ResponseTimeChart() {
       </g>
     );
   };
-  console.log("nfeData:", nfeData);
-  console.log("chartData:", chartData);
 
   return (
     <Card className="w-full mt-4">

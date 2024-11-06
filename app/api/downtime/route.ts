@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 
 export async function GET() {
   try {
-    const response = await fetch('https://api.solvor.com.br/dfe/volume_consolidado', {
+    const response = await fetch('https://api.solvor.com.br/outbound/downtime', {
       headers: {
         Authorization: '763b65c9-108f-4ff6-a79f-2204f608f1fc',
         'Cache-Control': 'no-store, max-age=0',

@@ -3,20 +3,13 @@ import { login } from '@/services/authService';
 
 const AUTO_LOGIN_USERNAME = process.env.AUTO_LOGIN_USERNAME || '';
 const AUTO_LOGIN_PASSWORD = process.env.AUTO_LOGIN_PASSWORD || '';
-const TV_IDENTIFIER = 'TV_ppwsy6v6r';
+
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, password, isTvBrowser, tvIdentifier } = await request.json();
+    const { username, password, isTvBrowser, } = await request.json();
 
-    console.log('Login attempt:', {
-      isTvBrowser,
-      tvIdentifier,
-      hasUsername: !!username,
-      hasPassword: !!password,
-      hasAutoLogin: !!AUTO_LOGIN_USERNAME && !!AUTO_LOGIN_PASSWORD,
-      expectedTvId: TV_IDENTIFIER
-    });
+
 
     if (isTvBrowser) {
       // if (!tvIdentifier) {

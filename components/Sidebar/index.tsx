@@ -12,6 +12,7 @@ import {
   GearIcon,
   ExitIcon,
   ListBulletIcon,
+  ExclamationTriangleIcon
 } from "@radix-ui/react-icons";
 import { ModeToggle } from "../DarkModeToggle/DarkMode";
 import { AudioAlert } from "../Alert/audio-alert";
@@ -27,8 +28,20 @@ export function Sidebar({
 }) {
   const router = useRouter();
 
-  const handleLogout = () => {
-    router.push("/login");
+  const handleLogout = async () => {
+    try {
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+      });
+
+      if (response.ok) {
+        router.push("/login");
+      } else {
+        console.error('Failed to logout');
+      }
+    } catch (error) {
+      console.error('Error during logout:', error);
+    }
   };
 
   return (
@@ -51,6 +64,7 @@ export function Sidebar({
           {[
             { icon: HomeIcon, label: "Home", href: "/dashboard" },
             { icon: ListBulletIcon, label: "Filas", href: "/Queue" },
+            { icon: ExclamationTriangleIcon, label: "Incidentes", href: "/Incidentes" },
           ].map(({ icon: Icon, label, href }) => (
             <li key={label} className="mb-2">
               <Link

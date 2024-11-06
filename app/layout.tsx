@@ -4,6 +4,7 @@ import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
 import { MonitorProvider } from "@/context/MonitorContext";
+import { SpeedInsights } from "@vercel/speed-insights/next";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
@@ -38,7 +39,8 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <MonitorProvider>
-          {children}
+            {children}
+            <SpeedInsights />
           </MonitorProvider>
           <Toaster />
         </ThemeProvider>
