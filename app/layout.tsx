@@ -25,7 +25,7 @@ const googleSansMono = localFont({
 
 export const metadata: Metadata = {
   title: "Monitor Outbound",
-  description: "Criado por Daniel Heringer",
+  description: "Criado por Daniel Heringer e Raphael Carneiro",
 };
 
 export default function RootLayout({
