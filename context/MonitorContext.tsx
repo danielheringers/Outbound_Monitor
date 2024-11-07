@@ -287,7 +287,7 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   useEffect(() => {
     updateAllData()
-    const intervalId = setInterval(updateAllData, 1 * 60 * 1000)
+    const intervalId = setInterval(updateAllData, 5 * 60 * 1000)
     return () => clearInterval(intervalId)
   }, [updateAllData])
 
@@ -298,7 +298,7 @@ export const MonitorProvider: React.FC<{ children: React.ReactNode }> = ({ child
         updateAllData()
       }
     }
-    const intervalId = setInterval(checkCounterReset, 60000) // Verifica a cada minuto
+    const intervalId = setInterval(checkCounterReset, 60000) 
     return () => clearInterval(intervalId)
   }, [updateAllData])
 
