@@ -16,8 +16,9 @@ export async function POST(request: NextRequest) {
       try {
         const authResponse = await login(AUTO_LOGIN_USERNAME, AUTO_LOGIN_PASSWORD);
         return NextResponse.json({ success: true, user: authResponse.data });
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (loginError) {
-        throw new Error(`Erro no auto-login: ${loginError instanceof Error ? loginError.message : 'Erro desconhecido'}`);
+        return NextResponse.json({ success: false, error: 'Erro no auto-login' });
       }
     } else {
       // Regular authentication
