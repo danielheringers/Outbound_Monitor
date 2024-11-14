@@ -4,22 +4,11 @@ import { login } from '@/services/authService';
 const AUTO_LOGIN_USERNAME = process.env.AUTO_LOGIN_USERNAME || '';
 const AUTO_LOGIN_PASSWORD = process.env.AUTO_LOGIN_PASSWORD || '';
 
-
 export async function POST(request: NextRequest) {
   try {
-    const { username, password, isTvBrowser, } = await request.json();
+    const { username, password, isTvBrowser } = await request.json();
 
-
-
-    if (isTvBrowser) {
-      // if (!tvIdentifier) {
-      //   throw new Error('TV Identifier não fornecido');
-      // }
-
-      // if (!tvIdentifier) {
-      //   throw new Error(`TV Identifier inválido: ${tvIdentifier}`);
-      // }
-
+    if (isTvBrowser === 'true') {
       if (!AUTO_LOGIN_USERNAME || !AUTO_LOGIN_PASSWORD) {
         throw new Error('Credenciais de auto-login não configuradas');
       }
