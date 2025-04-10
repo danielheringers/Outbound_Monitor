@@ -1,22 +1,22 @@
-'use client'
+'use client';
 
-import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Button } from "@/components/ui/button"
-import { Label } from "@/components/ui/label"
-import { toast } from "@/hooks/use-toast"
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { toast } from '@/hooks/use-toast';
+import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 
 export default function LoginForm() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
-  const [userAgent, setUserAgent] = useState('Não disponível');
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [error, setError] = useState<any>(null)
-  const router = useRouter()
-
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const router = useRouter();
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -36,11 +36,11 @@ export default function LoginForm() {
       });
 
       const data = await response.json();
-      
+
       if (data.success) {
         toast({
-          title: "Login bem-sucedido",
-          description: "Redirecionando para a página principal...",
+          title: 'Login bem-sucedido',
+          description: 'Redirecionando para a página principal...',
         });
         router.push('/dashboard');
       } else {
@@ -48,12 +48,13 @@ export default function LoginForm() {
         throw new Error(data.error || 'Falha na autenticação');
       }
     } catch (error) {
-      const errorMessage = error instanceof Error ? error.message : 'Erro desconhecido';
+      const errorMessage =
+        error instanceof Error ? error.message : 'Erro desconhecido';
       setError(error);
       toast({
-        title: "Erro de autenticação",
+        title: 'Erro de autenticação',
         description: `Falha no login: ${errorMessage}`,
-        variant: "destructive",
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
@@ -66,7 +67,9 @@ export default function LoginForm() {
         <CardHeader>
           <CardTitle>Login</CardTitle>
           <CardDescription>
-            {isTv ? 'Login automático para TV' : 'Entre com suas credenciais para acessar o dashboard.'}
+            {isTv
+              ? 'Login automático para TV'
+              : 'Entre com suas credenciais para acessar o dashboard.'}
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -75,37 +78,30 @@ export default function LoginForm() {
               <>
                 <div className="space-y-2">
                   <Label htmlFor="email">Email</Label>
-                  <Input 
-                    id="email" 
-                    type="email" 
-                    placeholder="seu@email.com" 
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="seu@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    required 
+                    required
                   />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="password">Senha</Label>
-                  <Input 
-                    id="password" 
-                    type="password" 
+                  <Input
+                    id="password"
+                    type="password"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    required 
+                    required
                   />
                 </div>
               </>
             )}
           </CardContent>
-          <CardFooter>
-            {!isTv && (
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Entrando..." : "Entrar"}
-              </Button>
-            )}
-          </CardFooter>
         </form>
       </Card>
     </div>
-  )
+  );
 }
