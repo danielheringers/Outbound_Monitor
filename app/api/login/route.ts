@@ -1,9 +1,6 @@
 import { login } from '@/services/authService';
 import { NextRequest, NextResponse } from 'next/server';
 
-const AUTO_LOGIN_USERNAME = process.env.AUTO_LOGIN_USERNAME || '';
-const AUTO_LOGIN_PASSWORD = process.env.AUTO_LOGIN_PASSWORD || '';
-
 export async function POST(request: NextRequest) {
   try {
     const { username, password, isTvBrowser } = await request.json();
