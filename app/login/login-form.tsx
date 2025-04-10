@@ -20,7 +20,6 @@ export default function LoginForm() {
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    setError(null);
 
     try {
       const response = await fetch('/api/login', {
@@ -43,13 +42,11 @@ export default function LoginForm() {
         });
         router.push('/dashboard');
       } else {
-        setError(data);
         throw new Error(data.error || 'Falha na autenticação');
       }
     } catch (error) {
       const errorMessage =
         error instanceof Error ? error.message : 'Erro desconhecido';
-      setError(error);
       toast({
         title: 'Erro de autenticação',
         description: `Falha no login: ${errorMessage}`,
