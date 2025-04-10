@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 export async function POST(request: NextRequest) {
   try {
-    const { username, password, isTvBrowser } = await request.json();
+    const { username, password } = await request.json();
     try {
       const authResponse = await login(username, password);
       return NextResponse.json({ success: true, user: authResponse.data });
