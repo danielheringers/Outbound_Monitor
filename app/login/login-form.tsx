@@ -16,12 +16,10 @@ import { useState } from 'react';
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
-    setIsLoading(true);
     setError(null);
 
     try {
@@ -57,8 +55,6 @@ export default function LoginForm() {
         description: `Falha no login: ${errorMessage}`,
         variant: 'destructive',
       });
-    } finally {
-      setIsLoading(false);
     }
   };
 
