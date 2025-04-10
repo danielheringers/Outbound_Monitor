@@ -16,6 +16,7 @@ import { useState } from 'react';
 export default function LoginForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setIsLoading] = useState(false);
   const router = useRouter();
 
   const handleSubmit = async (e?: React.FormEvent) => {
