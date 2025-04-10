@@ -1,5 +1,6 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -78,6 +79,9 @@ export default function LoginForm() {
                 required
               />
             </div>
+            <Button type="submit" className="w-full mt-4">
+              Entrar
+            </Button>
           </CardContent>
         </form>
       </Card>
