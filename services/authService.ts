@@ -25,8 +25,10 @@ interface AuthResponse {
   };
 }
 
-
-export async function login(username: string, password: string): Promise<AuthResponse> {
+export async function login(
+  username: string,
+  password: string,
+): Promise<AuthResponse> {
   const response = await fetch('https://api.orbitspot.com/auth', {
     method: 'POST',
     headers: {
@@ -45,7 +47,10 @@ export async function login(username: string, password: string): Promise<AuthRes
   const data: AuthResponse = await response.json();
 
   cookies().set('token', data.token, { httpOnly: true, secure: true });
-  cookies().set('x-api-key', "74aa1c5ee5f151a34e873905679dadce5a0599f01f6d35a6", { httpOnly: true, secure: true });
+  cookies().set('x-api-key', '98e64e05-0565-42ee-94e4-d4e45b52a9f4', {
+    httpOnly: true,
+    secure: true,
+  });
 
   return data;
 }
