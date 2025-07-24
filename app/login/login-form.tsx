@@ -1,13 +1,14 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import Cookies from "js-cookie";
+import { Separator } from "@/components/ui/separator";
 
 export default function LoginForm() {
   const [password, setPassword] = useState("");
@@ -38,12 +39,21 @@ export default function LoginForm() {
     <div className="w-full max-w-md">
       <Card>
         <CardHeader>
-          <CardTitle>Login</CardTitle>
+          <div className="flex flex-col items-center align-center">
+            <h1 className="font-semibold text-2xl text-center">Login</h1>
+            <Separator className="my-2 w-4" orientation="horizontal" />
+            <p className="text-sm text-muted-foreground text-center">
+              Acesso restrito. Insira a senha para continuar.
+            </p>
+          </div>
         </CardHeader>
+
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="password">Senha</Label>
+          <CardContent className="space-y-3">
+            <div className="space-y-1">
+              <Label htmlFor="password">
+                <span className="tracking-wide">Senha</span>
+              </Label>
               <Input
                 id="password"
                 type="password"
@@ -52,7 +62,7 @@ export default function LoginForm() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full mt-4">
+            <Button type="submit" className="w-full font-bold">
               Entrar
             </Button>
           </CardContent>
