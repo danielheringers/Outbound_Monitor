@@ -21,12 +21,9 @@ export async function GET() {
       throw new Error("Falha na requisição à API");
     }
     const data = await response.json();
+    await new Promise((res) => setTimeout(res, 1000));
 
-    return NextResponse.json(
-      setTimeout(() => {
-        return data;
-      }, 1000)
-    );
+    return NextResponse.json(data);
   } catch (error) {
     console.error("Erro ao buscar métricas:", error);
     return NextResponse.json(
