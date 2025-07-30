@@ -21,7 +21,6 @@ export async function GET() {
       throw new Error("Falha na requisição à API");
     }
     const data = await response.json();
-    await new Promise((res) => setTimeout(res, 1000));
 
     return NextResponse.json(data);
   } catch (error) {

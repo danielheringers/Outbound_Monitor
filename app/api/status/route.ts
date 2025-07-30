@@ -15,7 +15,6 @@ export async function GET() {
       throw new Error(`HTTP error! status: ${response.status}`);
     }
     const data = await response.json();
-    await new Promise((res) => setTimeout(res, 1000));
 
     return NextResponse.json(data.components);
   } catch (error) {

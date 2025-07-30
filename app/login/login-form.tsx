@@ -7,45 +7,34 @@ import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import Cookies from "js-cookie";
 
 export default function LoginForm() {
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleSubmit = async (e?: React.FormEvent) => {
+  const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
-    try {
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          username: email,
-          password: password,
-        }),
+    const token = process.env.NEXT_PUBLIC_API_TOKEN!;
+    const xApiKey = process.env.NEXT_PUBLIC_X_API_KEY!;
+
+    if (password === "22072025") {
+      Cookies.set("token", token, { expires: 1 });
+      Cookies.set("x-api-key", xApiKey, { expires: 1 });
+      console.log(token, xApiKey);
+      toast({
+        title: "Login bem-sucedido",
+        description: "Redirecionando para a página principal...",
       });
 
-      const data = await response.json();
-
-      if (data.success) {
-        toast({
-          title: "Login bem-sucedido",
-          description: "Redirecionando para a página principal...",
-        });
+      setTimeout(() => {
         router.push("/dashboard");
-      } else {
-        throw new Error(data.error || "Falha na autenticação");
-      }
-    } catch (error) {
-      const errorMessage =
-        error instanceof Error ? error.message : "Erro desconhecido";
+      }, 1500);
+    } else {
       toast({
-        title: "Erro de autenticação",
-        description: `Falha no login: ${errorMessage}`,
-        variant: "destructive",
+        title: "Login falhou",
+        description: "Senha incorreta. Tente novamente.",
       });
     }
   };
@@ -58,17 +47,6 @@ export default function LoginForm() {
         </CardHeader>
         <form onSubmit={handleSubmit}>
           <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="seu@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
             <div className="space-y-2">
               <Label htmlFor="password">Senha</Label>
               <Input
