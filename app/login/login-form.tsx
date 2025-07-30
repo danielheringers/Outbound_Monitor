@@ -1,36 +1,51 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import Cookies from "js-cookie";
-import { Separator } from "@/components/ui/separator";
 
 export default function LoginForm() {
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
-    if (password === "22072025") {
-      Cookies.set("token", "authenticated", { expires: 1 });
-      toast({
-        title: "Login bem-sucedido",
-        description: "Redirecionando para a página principal...",
+    try {
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: email,
+          password: password,
+        }),
       });
 
-      setTimeout(() => {
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "Login bem-sucedido",
+          description: "Redirecionando para a página principal...",
+        });
         router.push("/dashboard");
-      }, 500);
-    } else {
+      } else {
+        throw new Error(data.error || "Falha na autenticação");
+      }
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro desconhecido";
       toast({
-        title: "Login falhou",
-        description: "Senha incorreta. Tente novamente.",
+        title: "Erro de autenticação",
+        description: `Falha no login: ${errorMessage}`,
+        variant: "destructive",
       });
     }
   };
@@ -39,21 +54,23 @@ export default function LoginForm() {
     <div className="w-full max-w-md">
       <Card>
         <CardHeader>
-          <div className="flex flex-col items-center align-center">
-            <h1 className="font-semibold text-2xl text-center">Login</h1>
-            <Separator className="my-2 w-4" orientation="horizontal" />
-            <p className="text-sm text-muted-foreground text-center">
-              Acesso restrito. Insira a senha para continuar.
-            </p>
-          </div>
+          <CardTitle>Login</CardTitle>
         </CardHeader>
-
         <form onSubmit={handleSubmit}>
-          <CardContent className="space-y-3">
-            <div className="space-y-1">
-              <Label htmlFor="password">
-                <span className="tracking-wide">Senha</span>
-              </Label>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email">Email</Label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="seu@email.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="password">Senha</Label>
               <Input
                 id="password"
                 type="password"
@@ -62,7 +79,7 @@ export default function LoginForm() {
                 required
               />
             </div>
-            <Button type="submit" className="w-full font-bold">
+            <Button type="submit" className="w-full mt-4">
               Entrar
             </Button>
           </CardContent>
