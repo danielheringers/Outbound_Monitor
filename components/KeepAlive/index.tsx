@@ -1,5 +1,11 @@
 "use client";
 
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@radix-ui/react-tooltip";
 import { useEffect, useState } from "react";
 
 export default function KeepAlive() {
@@ -31,8 +37,33 @@ export default function KeepAlive() {
   }, []);
 
   return (
-    <div className="fixed bottom-2 right-6 p-2 text-xs text-gray-500">
-      Última atividade: {new Date(lastActivity).toLocaleTimeString()}
-    </div>
+    <TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div className="fixed bottom-4 right-6 bg-gray-700/70 p-3 rounded-full cursor-pointer">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              className="w-5 h-5"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M13 16h-1v-4h-1m1-4h.01M12 2a10 10 0 100 20 10 10 0 000-20z"
+              />
+            </svg>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent side="left" align="center" className="p-2 rounded-md">
+          <p className="text-[13px] px-3 py-2">
+            Última atividade:{" "}
+            <b>{new Date(lastActivity).toLocaleTimeString()}</b>
+          </p>
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }

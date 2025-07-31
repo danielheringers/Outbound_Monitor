@@ -5,11 +5,6 @@ import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
 import { MonitorProvider } from "@/context/MonitorContext";
 import { SpeedInsights } from "@vercel/speed-insights/next";
-import dynamic from "next/dynamic";
-
-const KeepAlive = dynamic(() => import("@/components/KeepAlive"), {
-  ssr: false,
-});
 
 const googleSansMono = localFont({
   src: [
@@ -51,7 +46,6 @@ export default function RootLayout({
           <MonitorProvider>
             {children}
             <SpeedInsights />
-            <KeepAlive />
           </MonitorProvider>
           <Toaster />
         </ThemeProvider>
