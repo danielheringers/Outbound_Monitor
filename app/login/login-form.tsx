@@ -19,11 +19,10 @@ export default function LoginForm() {
 
     const token = process.env.NEXT_PUBLIC_API_TOKEN!;
     const xApiKey = process.env.NEXT_PUBLIC_X_API_KEY!;
-
     if (password === "22072025") {
-      Cookies.set("token", token, { expires: 1 });
-      Cookies.set("x-api-key", xApiKey, { expires: 1 });
-      console.log(token, xApiKey);
+      Cookies.set("token", token, { expires: 365 });
+      Cookies.set("x-api-key", xApiKey, { expires: 365 });
+
       toast({
         title: "Login bem-sucedido",
         description: "Redirecionando para a página principal...",
