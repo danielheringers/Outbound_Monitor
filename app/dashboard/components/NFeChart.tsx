@@ -14,8 +14,9 @@ import { formatNumber } from "@/lib/utils";
 import { useEffect, useState } from "react";
 
 export function NFeChart() {
-  const { nfeData, queueData, notesToday, notesThisMonth, updateAllData } = useMonitor()
-  const [queueCount, setQueueCount] = useState(0)
+  const { nfeData, queueData, notesToday, notesThisMonth, updateAllData } =
+    useMonitor();
+  const [queueCount, setQueueCount] = useState(0);
 
   const chartConfig = {
     count: {
@@ -29,17 +30,15 @@ export function NFeChart() {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      updateAllData()
-    }, 300000)
-    return () => clearInterval(intervalId)
-  }, [updateAllData])
+      updateAllData();
+    }, 300000);
+    return () => clearInterval(intervalId);
+  }, [updateAllData]);
 
   useEffect(() => {
     const newQueueCount = queueData.nfeEmit?.totalMessagesReady || 0;
     setQueueCount(newQueueCount);
   }, [queueData]);
-
-
 
   const maxCount = Math.max(...nfeData.map((item) => item.count));
   const minCount = Math.min(...nfeData.map((item) => item.count));
@@ -47,17 +46,19 @@ export function NFeChart() {
 
   return (
     <Card className="w-full">
-      <CardHeader className="flex flex-col w-full items-center justify-between gap-2 sm:gap-6 lg:flex-row">
-        <CardTitle className="flex items-center text-lg md:text-md lg:text-2xl h-full">
+      <CardHeader className="flex flex-col w-full items-center justify-between gap-4 lg:flex-row">
+        <CardTitle className="flex items-center text-lg md:text-md lg:text-2xl h-full mt-2">
           NFe
         </CardTitle>
         <QueueStatusBadges />
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-2 sm:gap-4 mb-4 p-2">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-2 mb-6 py-4">
           <Card className="rounded-md">
             <CardContent className="flex p-2 items-center justify-between h-full">
-              <div className="text-sm sm:text-md text-muted-foreground w-full">Hoje</div>
+              <div className="text-sm sm:text-md text-muted-foreground w-full">
+                Hoje
+              </div>
               <Separator orientation="vertical" className="mx-2" />
               <div className="text-lg sm:text-md md:text-lg font-bold pl-2 sm:pl-4 pr-2">
                 {formatNumber(notesToday.nfe)}
@@ -66,7 +67,9 @@ export function NFeChart() {
           </Card>
           <Card className="rounded-md">
             <CardContent className="flex p-2 items-center justify-between h-full">
-              <div className="text-sm sm:text-md text-muted-foreground w-full">Mês</div>
+              <div className="text-sm sm:text-md text-muted-foreground w-full">
+                Mês
+              </div>
               <Separator orientation="vertical" className="mx-2" />
               <div className="text-lg sm:text-md md:text-lg font-bold pl-2 sm:pl-4 pr-2">
                 {formatNumber(notesThisMonth.nfe)}

@@ -15,16 +15,14 @@ export default function NFSERPSStatusBadge() {
   const RPS = queueData.RPS?.totalMessagesReady || 0;
 
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="flex flex-wrap md:justify-center lg:justify-end gap-2">
       <Card className="rounded-md">
         <CardContent className="p-2 flex items-center space-x-2">
           <span className="text-sm font-medium text-muted-foreground">
             Emissão
           </span>
           <Separator orientation="vertical" className="h-4" />
-          <span className="text-sm font-bold">
-            {formatNumber(nfseEmit)}
-          </span>
+          <span className="text-sm font-bold">{formatNumber(nfseEmit)}</span>
         </CardContent>
       </Card>
       <Card className="rounded-md">
@@ -33,9 +31,7 @@ export default function NFSERPSStatusBadge() {
             Cancelamento
           </span>
           <Separator orientation="vertical" className="h-4" />
-          <span className="text-sm font-bold">
-            {formatNumber(nfseCancel)}
-          </span>
+          <span className="text-sm font-bold">{formatNumber(nfseCancel)}</span>
         </CardContent>
       </Card>
       <Card className="rounded-md">
@@ -62,13 +58,9 @@ export default function NFSERPSStatusBadge() {
       </Card>
       <Card className="rounded-md">
         <CardContent className="p-2 flex items-center space-x-2">
-          <span className="text-sm font-medium text-muted-foreground">
-            RPS
-          </span>
+          <span className="text-sm font-medium text-muted-foreground">RPS</span>
           <Separator orientation="vertical" className="h-4" />
-          <span className="text-sm font-bold">
-            {formatNumber(RPS)}
-          </span>
+          <span className="text-sm font-bold">{formatNumber(RPS)}</span>
         </CardContent>
       </Card>
     </div>
