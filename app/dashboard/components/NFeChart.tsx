@@ -53,7 +53,7 @@ export function NFeChart() {
         <QueueStatusBadges />
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-2 mb-6 py-4">
+        <div className="grid grid-cols-1 md:grid-cols-1 lg:grid-cols-3 gap-2 mb-6 py-2">
           <Card className="rounded-md">
             <CardContent className="flex p-2 items-center justify-between h-full">
               <div className="text-sm sm:text-md text-muted-foreground w-full">

@@ -120,7 +120,7 @@ export function Header() {
   };
 
   return (
-    <div className="p-8 border-b grid sm:grid-cols-2 md:grid-cols-3 gap-6">
+    <div className="py-4 px-6 border-b grid sm:grid-cols-2 md:grid-cols-3 gap-3">
       <Card className="flex w-full max-h-[7rem] bg-card sm:px-4 lg:px-12 items-center">
         <CardContent className="flex w-full h-[7rem] items-center justify-between px-4 py-3 gap-2">
           <CardTitle className="text-xs sm:text-sm 2xl:text-lg font-medium">

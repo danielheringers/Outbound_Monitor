@@ -13,11 +13,11 @@ export function MainContent() {
       <main>
         <Header />
         <div className="flex w-full items-center justify-center"></div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 py-5 px-8 mt-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 px-6 pt-4">
           <NFSeChart />
           <NFeChart />
         </div>
-        <div className="px-8 pb-3">
+        <div className="px-6">
           <ResponseTimeChart />
         </div>
       </main>
