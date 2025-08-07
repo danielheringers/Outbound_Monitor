@@ -14,23 +14,46 @@ export default function LoginForm() {
   const [password, setPassword] = useState("");
   const router = useRouter();
 
-  const handleSubmit = (e?: React.FormEvent) => {
+  const handleSubmit = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
 
-    const token = process.env.NEXT_PUBLIC_API_TOKEN!;
-    const xApiKey = process.env.NEXT_PUBLIC_X_API_KEY!;
     if (password === "22072025") {
-      Cookies.set("token", token, { expires: 365 });
-      Cookies.set("x-api-key", xApiKey, { expires: 365 });
+      try {
+        const response = await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username: process.env.NEXT_PUBLIC_EMAIL_LOGIN,
+            password: process.env.NEXT_PUBLIC_PASSWORD_LOGIN,
+          }),
+        });
 
-      toast({
-        title: "Login bem-sucedido",
-        description: "Redirecionando para a página principal...",
-      });
+        const data = await response.json();
 
-      setTimeout(() => {
-        router.push("/dashboard");
-      }, 1500);
+        if (data.success) {
+          Cookies.set("token", data.token);
+          Cookies.set("user", JSON.stringify(data.user));
+
+          toast({
+            title: "Login bem-sucedido",
+            description: "Redirecionando para a página principal...",
+          });
+          setTimeout(() => {
+            router.push("/dashboard");
+          }, 1500);
+        } else {
+          throw new Error(data.error || "Falha no login");
+        }
+      } catch (err) {
+        console.error("Erro ao fazer login:", err);
+        toast({
+          title: "Erro de autenticação",
+          description: "Não foi possível autenticar. Tente novamente.",
+        });
+        return;
+      }
     } else {
       toast({
         title: "Login falhou",
