@@ -129,8 +129,8 @@ export function Header() {
           <Separator className="my-2 h-8" orientation="vertical" />
           <CircularProgress
             value={timeOnline}
-            size={75}
-            strokeWidth={5}
+            size={80}
+            strokeWidth={4}
             textSize="text-base font-bold"
           />
         </CardContent>
@@ -160,7 +160,7 @@ export function Header() {
         >
           <CardContent className="p-4 flex flex-col w-full items-center justify-between">
             <div className="flex w-full items-center justify-between">
-              <div className="text-xs sm:text-sm 2xl:text-lg">
+              <div className="text-xs sm:text-sm 2xl:text-lg font-medium">
                 {update.name}
               </div>
               <div className="text-[10px] sm:text-xs 2xl:text-sm text-muted-foreground font-bold">

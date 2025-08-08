@@ -80,7 +80,7 @@ export function Sidebar({
               >
                 <Icon className="h-5 w-5" />
                 {expanded && (
-                  <span className="ml-3 tracking-wider">{label}</span>
+                  <span className="ml-3 tracking-wide">{label}</span>
                 )}
               </Link>
             </li>
@@ -93,7 +93,7 @@ export function Sidebar({
             {expanded && (
               <Button
                 variant="ghost"
-                className="flex items-center p-2 rounded-lg tracking-wider hover:bg-primary/10 w-full justify-start ml-2"
+                className="flex items-center p-2 rounded-lg tracking-wide hover:bg-primary/10 w-full justify-start ml-2"
               >
                 <span>Notifications</span>
               </Button>
@@ -113,7 +113,7 @@ export function Sidebar({
               onClick={onClick}
             >
               <Icon className="h-5 w-5" />
-              {expanded && <span className="ml-3 tracking-wider">{label}</span>}
+              {expanded && <span className="ml-3 tracking-wide">{label}</span>}
             </Button>
           ))}
           <Button
@@ -125,7 +125,7 @@ export function Sidebar({
             onClick={handleLogout}
           >
             <ExitIcon className="h-5 w-5" />
-            {expanded && <span className="ml-3 tracking-wider">Logout</span>}
+            {expanded && <span className="ml-3 tracking-wide">Logout</span>}
           </Button>
         </div>
       </nav>

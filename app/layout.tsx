@@ -1,25 +1,14 @@
 import type { Metadata } from "next";
-import localFont from "next/font/local";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "next-themes";
 import { Toaster } from "@/components/ui/toaster";
-import { MonitorProvider } from "@/context/MonitorContext";
 import { SpeedInsights } from "@vercel/speed-insights/next";
 
-const googleSansMono = localFont({
-  src: [
-    {
-      path: "./fonts/ProductSans-Regular.ttf",
-      weight: "400",
-      style: "normal",
-    },
-    {
-      path: "./fonts/ProductSans-Bold.ttf",
-      weight: "700",
-      style: "normal",
-    },
-  ],
-  variable: "--font-google-sans-mono",
+const inter = Inter({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-inter",
 });
 
 export const metadata: Metadata = {
@@ -33,20 +22,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-br">
-      <body
-        className={`${googleSansMono.variable} ${googleSansMono.variable} antialiased`}
-      >
+    <html lang="pt-br" className={inter.className}>
+      <body>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
           enableSystem
           disableTransitionOnChange
         >
-          <MonitorProvider>
-            {children}
-            <SpeedInsights />
-          </MonitorProvider>
+          {children}
+          <SpeedInsights />
           <Toaster />
         </ThemeProvider>
       </body>
