@@ -52,9 +52,9 @@ export function NFSeChart() {
   const yDomain = [Math.max(0, minCount - 50), maxCount + 50];
 
   return (
-    <Card className="w-full">
+    <Card className="w-full h-full flex flex-col justify-between">
       <CardHeader className="flex flex-col w-full items-start justify-between gap-4 lg:flex-row">
-        <CardTitle className="flex items-center text-lg md:text-md lg:text-2xl h-full mt-2">
+        <CardTitle className="flex text-lg md:text-md lg:text-2xl h-full mt-2">
           NFSe
         </CardTitle>
         <NFSERPSStatusBadge />
