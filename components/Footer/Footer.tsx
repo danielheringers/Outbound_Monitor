@@ -121,7 +121,7 @@ export function Footer() {
     <footer className="border-t">
       <div className="pb-2">
         <div className="flex flex-col w-full">
-          <div className="flex flex-col w-full pt-4 pb-2 justify-start sm:flex-row sm:pr-4 sm:pl-8">
+          <div className="flex flex-col w-full pt-4 pb-2 justify-start sm:flex-row sm:pr-4 sm:pl-6">
             <h3 className="text-base sm:text-lg font-semibold mb-2 sm:mb-0">
               Sefaz
             </h3>
@@ -139,7 +139,7 @@ export function Footer() {
           </div>
           <Separator className="my-2" />
           <div>
-            <div className="flex flex-wrap gap-1 py-2 justify-start sm:gap-2 sm:justify-center sm:mx-16 md:mx-24">
+            <div className="flex flex-wrap gap-1 py-2 justify-start sm:gap-2 sm:justify-center sm:mr-10 md:mr-8 md:ml-2">
               {stateStatuses.map((state) => (
                 <StatusBadge
                   key={state.name}

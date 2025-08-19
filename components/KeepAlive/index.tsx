@@ -40,13 +40,13 @@ export default function KeepAlive() {
     <TooltipProvider>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="fixed bottom-4 right-6 bg-gray-700/70 p-3 rounded-full cursor-pointer">
+          <div className="p-2 bg-gray-700/70 rounded-full cursor-pointer">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
-              className="w-5 h-5"
+              className="w-4 h-4"
             >
               <path
                 strokeLinecap="round"
@@ -57,8 +57,9 @@ export default function KeepAlive() {
             </svg>
           </div>
         </TooltipTrigger>
+
         <TooltipContent side="left" align="center" className="p-2 rounded-md">
-          <p className="text-[13px] px-3 py-2">
+          <p className="text-[13px] p-1 rounded-md bg-neutral-950">
             Última atividade:{" "}
             <b>{new Date(lastActivity).toLocaleTimeString()}</b>
           </p>

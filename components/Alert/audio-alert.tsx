@@ -72,7 +72,7 @@ export function AudioAlert() {
             variant="ghost"
             size="sm"
             onClick={toggleAudioAlert}
-            className="relative p-0 w-full"
+            className="relative p-0"
           >
             <BellIcon className="h-5 w-5" />
             {isEnabled && (

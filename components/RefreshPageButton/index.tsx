@@ -2,9 +2,9 @@
 
 export default function RefreshPageButton() {
   return (
-    <div className="fixed bottom-14 right-4 mb-2 p-2 text-xs text-gray-500">
+    <div className="text-xs text-gray-500">
       <button
-        className="bg-blue-900 text-white p-3 rounded-full shadow-md hover:bg-blue-800"
+        className="bg-blue-900 text-white p-2 rounded-full shadow-md hover:bg-blue-800"
         onClick={() => {
           window.location.reload();
         }}
@@ -15,7 +15,7 @@ export default function RefreshPageButton() {
           viewBox="0 0 24 24"
           strokeWidth="2"
           stroke="currentColor"
-          className="h-5 w-5"
+          className="h-4 w-4"
         >
           <path
             strokeLinecap="round"

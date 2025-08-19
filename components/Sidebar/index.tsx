@@ -16,6 +16,11 @@ import {
 } from "@radix-ui/react-icons";
 import { ModeToggle } from "../DarkModeToggle/DarkMode";
 import { AudioAlert } from "../Alert/audio-alert";
+import RefreshPageButton from "../RefreshPageButton";
+import dynamic from "next/dynamic";
+const KeepAlive = dynamic(() => import("@/components/KeepAlive"), {
+  ssr: false,
+});
 
 export function Sidebar({
   expanded,
@@ -80,15 +85,34 @@ export function Sidebar({
               >
                 <Icon className="h-5 w-5" />
                 {expanded && (
-                  <span className="ml-3 tracking-wide">{label}</span>
+                  <span className="ml-3 tracking-wide  text-sm">{label}</span>
                 )}
               </Link>
             </li>
           ))}
         </ul>
 
+        <ul className="flex flex-col py-4 px-2 border-t items-center">
+          {[{ button: <RefreshPageButton /> }, { button: <KeepAlive /> }].map(
+            ({ button }) => (
+              <li key={button.type.name} className="mb-1">
+                <span
+                  className={cn(
+                    "flex items-center p-2 rounded-lg hover:bg-primary/10",
+                    !expanded && "justify-center"
+                  )}
+                >
+                  {button}
+                </span>
+              </li>
+            )
+          )}
+        </ul>
+
         <div className="border-t flex flex-col p-3 pt-5">
-          <div className="flex items-center mb-2">
+          <div
+            className={`flex items-center mb-2 ${expanded ? "pl-1" : "pl-2"}`}
+          >
             <AudioAlert />
             {expanded && (
               <Button
@@ -113,7 +137,9 @@ export function Sidebar({
               onClick={onClick}
             >
               <Icon className="h-5 w-5" />
-              {expanded && <span className="ml-3 tracking-wide">{label}</span>}
+              {expanded && (
+                <span className="ml-3 tracking-wide text-sm">{label}</span>
+              )}
             </Button>
           ))}
           <Button
@@ -134,7 +160,7 @@ export function Sidebar({
         size="icon"
         onClick={() => setExpanded(!expanded)}
         className={cn(
-          "absolute top-1/2 -translate-y-1/2 -right-3 bg-secondary",
+          "absolute top-1/3 -translate-y-1/2 -right-3 bg-secondary",
           "hover:bg-primary/10",
           "p-1.5 h-7 w-6"
         )}
